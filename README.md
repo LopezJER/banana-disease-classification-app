@@ -8,6 +8,6 @@ It hosts the necessary components for preparing a dataset for banana disease ima
   - The Flask web application that requests predictions from the best-performing banana disease classification model.
     
 Please download the dataset at: 
-[https://drive.google.com/file/d/1B_bPOivLtsHwtGcYVOl8i3TNsZMcx-Sy/view?usp=sharing](url)
+[https://drive.google.com/file/d/1B_bPOivLtsHwtGcYVOl8i3TNsZMcx-Sy/view?usp=sharing](url) (Copy-paste to search bar; don't click)
 
 
