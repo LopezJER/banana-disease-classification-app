@@ -1,5 +1,3 @@
-numpy
-tensorflow
-scikit-learn
-jupyter
-flask
+Flask==2.3.3
+Flask-SQLAlchemy==3.1.1
+pandas==2.1.0
