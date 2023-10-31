@@ -1,0 +1,27 @@
+{
+    "diagnosis": [
+        "Healthy",
+        "Fusarium wilt",
+        "Bunchy top",
+        "Black sigatoka"
+    ],
+    "author": [
+        "Mitz",
+        "Juan Carlos",
+        "Iking"
+    ],
+    "part": [
+        "tree",
+        "foliage",
+        "leaf"
+    ],
+    "status": [
+        "OK",
+        "Quarantined"
+    ],
+    "location": [
+        "Laguna",
+        "Davao",
+        "Cavite"
+    ]
+}

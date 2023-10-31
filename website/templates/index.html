@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Image Data Asset Management Tool</title>
+    <!-- Import Bootstrap 5 CSS: https://getbootstrap.com/ -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+      crossorigin="anonymous"
+    />
+    <script src="https://kit.fontawesome.com/2fa58dfbff.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../static/styles.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+
+  <body>
+    <header class="navbar bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <!-- TODO: LOGO? <img src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="Logo" width="30" height="24" class="d-inline-block align-text-top"> -->
+          Image Data Asset Management Tool
+        </a>
+      </div>
+    </header>
+
+    <div class="d-flex flex-row p-3 main-content">
+      <main class="w-75 mx-3">
+        <div class="collapse multi-collapse" id="multiCollapseExample1">
+          <div class="d-flex justify-content-end">
+              <button
+                  type="button"
+                  class="btn btn-primary my-3"
+                  data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2"
+              >
+                  Search
+              </button>
+          </div>
+          <div class="container text-start p-0">
+
+              <div class="container text-center">
+                <div class="row mb-4">
+
+                  <div class="col">Diagnosis</div>
+
+                  <div class="col-8">
+                    <div class="d-flex flex-wrap diagnosis-container">
+
+                      <div class="form-check w-50 text-start my-auto d-flex flex-row gap-2">
+                        <input class="form-check-input" type="checkbox" value="Healthy" name="healthy-checkbox" id="healthy-checkbox">
+                        <label class="form-check-label w-100" for="healthy-checkbox">
+                          Healthy
+                        </label>
+                      </div>
+                      <div class="form-check w-50 text-start my-auto d-flex flex-row gap-2">
+                        <input class="form-check-input" type="checkbox" value="Fusarium wilt" name="fusarium-wilt-checkbox" id="fusarium-wilt-checkbox">
+                        <label class="form-check-label w-100" for="fusarium-wilt-checkbox">
+                          Fusarium wilt
+                        </label>
+                      </div>
+                      <div class="form-check w-50 text-start my-auto d-flex flex-row gap-2">
+                        <input class="form-check-input" type="checkbox" value="Bunchy top" name="bunchy-top-checkbox" id="bunchy-top-checkbox">
+                        <label class="form-check-label w-100" for="bunchy-top-checkbox">
+                          Bunchy top
+                        </label>
+                      </div>
+                      <div class="form-check w-50 text-start my-auto d-flex flex-row gap-2">
+                        <input class="form-check-input" type="checkbox" value="Black sigatoka" name="black-sigatoka-checkbox" id="black-sigatoka-checkbox">
+                        <label class="form-check-label w-100" for="black-sigatoka-checkbox">
+                          Black sigatoka
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col">
+                    <button type="button" class="btn add-category-btn from-filter" data-bs-toggle="modal" data-bs-target="#addCategoryModal" ><i class="fa-solid fa-circle-plus"></i> Add</button>
+                  </div>
+                  
+                  
+                </div>
+
+                <div class="row mb-4">
+                  <div class="col">Author</div>
+                  <div class="col-8">
+                    <select class="form-select author-select" name="author-select">
+                      <option selected disabled value="">Select Author</option>
+                      <option value="Mitz">Mitz</option>
+                      <option value="Juan Carlos">Juan Carlos</option>
+                      <option value="Iking">Iking</option>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn add-category-btn from-filter" data-bs-toggle="modal" data-bs-target="#addCategoryModal" ><i class="fa-solid fa-circle-plus"></i> Add</button>
+                  </div>
+
+                </div>
+
+                <div class="row mb-4">
+                  <div class="col">Part</div>
+                  <div class="col-8">
+                    <select class="form-select part-select" name="part-select">
+                      <option selected disabled value="">Select Part</option>
+                      <option value="tree">Tree</option>
+                      <option value="foliage">Foliage</option>
+                      <option value="leaf">Leaf</option>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn invisible add-category-btn from-filter" data-bs-toggle="modal" data-bs-target="#addCategoryModal" ><i class="fa-solid fa-circle-plus"></i> Add</button>
+                  </div>
+                </div>
+
+                <div class="row mb-4">
+                  <div class="col">Status</div>
+                  <div class="col-8">
+                    <select class="form-select status-select" name="status-select">
+                      <option selected disabled value="">Select Status</option>
+                      <option value="OK">OK</option>
+                      <option value="Quarantined">Quarantined</option>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn invisible add-category-btn from-filter" data-bs-toggle="modal" data-bs-target="#addCategoryModal" ><i class="fa-solid fa-circle-plus"></i> Add</button>
+                  </div>
+                </div>
+
+                <div class="row mb-4">
+                  <div class="col">Location</div>
+                  <div class="col-8">
+                    <select class="form-select location-select" name="location-select">
+                      <option selected disabled value="">Select Location</option>
+                      <option value="Laguna">Laguna</option>
+                      <option value="Davao">Davao</option>
+                      <option value="Cavite">Cavite</option>
+                    </select>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn add-category-btn from-filter" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><i class="fa-solid fa-circle-plus"></i> Add</button>
+                  </div>
+
+
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-end">
+                <button
+                    type="button"
+                    class="btn btn-primary my-3"
+                    id="filterSearchButton"
+                >
+                    Filter
+                </button>
+            </div>
+          </div>
+      </div>
+          <div class="d-flex flex-row justify-content-between gap-5">
+            
+            <div class="col">
+              <div class="collapse multi-collapse show" id="multiCollapseExample2">
+              <!-- Button trigger modal -->
+              <button
+                type="button"
+                class="btn btn-primary my-3"
+                data-bs-toggle="modal"
+                onclick="openFolderModal()"
+                data-bs-target="#folderModal"
+                
+              >
+                Load Dataset
+              </button>
+                <div class="d-flex flex-row justify-content-between gap-5">
+                  <div class="d-flex flex-row gap-5">
+                    <div class="input-group mb-3">
+                      <input
+                          type="text"
+                          class="form-control"
+                          name="filename"
+                          id="filename-input"
+                          placeholder="Search by filename"
+                          value="{{ filename_search_term }}"
+                      />
+                      <button type="button" class="btn btn-primary" id="search-filename-button">Search</button>
+                    </div>
+
+                    <div class="input-group mb-3">
+                      <input
+                          type="text"
+                          class="form-control"
+                          id="treeid-input"
+                          name="treeid"
+                          placeholder="Search by TreeID"
+                          value="{{ tree_id_search_term }}"
+                      />
+                      <button type="button" class="btn btn-primary" id="search-treeid-button">Search</button>
+                  </div>
+                  </div>
+                  <!-- Button trigger modal -->
+                  <button
+                    type="button"
+                    class="btn btn-primary mb-3"
+                    data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2"
+                  >
+                    Filter
+                  </button>
+                </div>
+              <!-- </div> -->
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-start">
+          <a
+            type="button"
+            class="btn btn-outline-primary my-1"
+            href="/"
+            style="background-color: green; border-color: green; color: white;"
+          >
+            Back to Main Gallery
+          </a>
+        </div>  
+        <div class="overflow-y-scroll mt-3 gallery-container">
+          <div class="d-flex flex-wrap gap-3">
+            {% for file_name in file_names %}
+              <!-- Render the image -->
+                <img src="../static/uploads/{{ file_name }}" class="card-img-top rounded float-start" alt="{{ file_name }}" style="width: 12rem; object-fit: cover;">
+            {% endfor %}
+          </div>
+        </div>
+        <div class="d-flex justify-content-end">
+          <button
+            type="button"
+            class="btn btn-primary my-3"
+          >
+            Copy to ...
+          </button>
+        </div>
+        
+          <!-- Upload Folder Modal -->
+          <form method="POST" action="{{ url_for('views.upload_folder') }}" enctype="multipart/form-data">
+            <div class="modal fade" id="folderModal" tabindex="-1" aria-labelledby="folderModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="folderModalLabel">Load Dataset</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <input type="file" id="folderInput" name="folder" webkitdirectory directory multiple style="display: none;" />
+                    <label for="folderInput" style="cursor: pointer;">Select a Folder</label>
+
+                    <div id="progressContainer" style="display: none;">
+                      Selected Folder: <span id="folderName"></span>
+                      <p>Uploading <span id="fileCount">0</span> files...</p>
+                      <progress id="progressBar" value="0" max="100"></progress>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="startFolderUpload()">Confirm</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <!-- Update Metadata modal -->
+          <div class="modal fade form-modal" id="updateMetaDateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <form action="/update_metadata" method="post">
+                  <!-- Filename and categories in json input fields are not displayed, 
+                    but necessary to fetch the filename to the backend -->
+                  <span class="invisible position-absolute"><input class="filename-input" name="filename-input"></input></span>
+                  <span class="invisible position-absolute"><textarea class="categories-in-json" name="categories-in-json"></textarea></span>
+
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Update Metadata</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+
+                    <div class="container text-center">
+                      <div class="row mb-4">
+
+                        <div class="col">Diagnosis</div>
+
+                        <div class="col-8">
+                          <div class="d-flex flex-wrap diagnosis-container">
+
+                            <div class="form-check w-50 text-start my-auto d-flex flex-row gap-2">
+                              <input class="form-check-input" type="checkbox" value="Healthy" name="healthy-checkbox" id="healthy-checkbox">
+                              <label class="form-check-label w-100" for="healthy-checkbox">
+                                Healthy
+                              </label>
+                            </div>
+                            <div class="form-check w-50 text-start my-auto d-flex flex-row gap-2">
+                              <input class="form-check-input" type="checkbox" value="Fusarium wilt" name="fusarium-wilt-checkbox" id="fusarium-wilt-checkbox">
+                              <label class="form-check-label w-100" for="fusarium-wilt-checkbox">
+                                Fusarium wilt
+                              </label>
+                            </div>
+                            <div class="form-check w-50 text-start my-auto d-flex flex-row gap-2">
+                              <input class="form-check-input" type="checkbox" value="Bunchy top" name="bunchy-top-checkbox" id="bunchy-top-checkbox">
+                              <label class="form-check-label w-100" for="bunchy-top-checkbox">
+                                Bunchy top
+                              </label>
+                            </div>
+                            <div class="form-check w-50 text-start my-auto d-flex flex-row gap-2">
+                              <input class="form-check-input" type="checkbox" value="Black sigatoka" name="black-sigatoka-checkbox" id="black-sigatoka-checkbox">
+                              <label class="form-check-label w-100" for="black-sigatoka-checkbox">
+                                Black sigatoka
+                              </label>
+                            </div>
+
+                          </div>
+                        </div>
+                        
+                        <div class="col">
+                          <button type="button" class="btn add-category-btn" data-bs-toggle="modal" data-bs-target="#addCategoryModal" ><i class="fa-solid fa-circle-plus"></i> Add</button>
+                        </div>
+                        
+                        
+                      </div>
+
+                      <div class="row mb-4">
+                        <div class="col">Author</div>
+                        <div class="col-8">
+                          <select class="form-select author-select" name="author-select">
+                            <option selected disabled>Select Author</option>
+                            <option value="Mitz">Mitz</option>
+                            <option value="Juan Carlos">Juan Carlos</option>
+                            <option value="Iking">Iking</option>
+                          </select>
+                        </div>
+                        <div class="col">
+                          <button type="button" class="btn add-category-btn" data-bs-toggle="modal" data-bs-target="#addCategoryModal" ><i class="fa-solid fa-circle-plus"></i> Add</button>
+                        </div>
+
+                      </div>
+
+                      <div class="row mb-4">
+                        <div class="col">Part</div>
+                        <div class="col-8">
+                          <select class="form-select part-select" name="part-select">
+                            <option selected disabled>Select Part</option>
+                            <option value="tree">Tree</option>
+                            <option value="foliage">Foliage</option>
+                            <option value="leaf">Leaf</option>
+                          </select>
+                        </div>
+                        <div class="col">
+                          <button type="button" class="btn invisible add-category-btn" data-bs-toggle="modal" data-bs-target="#addCategoryModal" ><i class="fa-solid fa-circle-plus"></i> Add</button>
+                        </div>
+                      </div>
+
+                      <div class="row mb-4">
+                        <div class="col">Status</div>
+                        <div class="col-8">
+                          <select class="form-select status-select" name="status-select">
+                            <option selected disabled>Select Status</option>
+                            <option value="OK">OK</option>
+                            <option value="Quarantined">Quarantined</option>
+                          </select>
+                        </div>
+                        <div class="col">
+                          <button type="button" class="btn invisible add-category-btn" data-bs-toggle="modal" data-bs-target="#addCategoryModal" ><i class="fa-solid fa-circle-plus"></i> Add</button>
+                        </div>
+                      </div>
+
+                      <div class="row mb-4">
+                        <div class="col">Location</div>
+                        <div class="col-8">
+                          <select class="form-select location-select" name="location-select">
+                            <option selected disabled>Select Location</option>
+                            <option value="Laguna">Laguna</option>
+                            <option value="Davao">Davao</option>
+                            <option value="Cavite">Cavite</option>
+                          </select>
+                        </div>
+                        <div class="col">
+                          <button type="button" class="btn add-category-btn" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><i class="fa-solid fa-circle-plus"></i> Add</button>
+                        </div>
+
+
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" name="submit" value="submit">Save changes</button>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          </div>
+
+
+          <div class="modal fade" id="addCategoryModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addCategoryModalLabel">Add New Option</h1>
+                    <button type="button" class="btn-close go-back-btn" data-bs-toggle="modal" data-bs-target="#updateMetaDateModal" aria-label="Close"></button>
+                  </div>
+                    <form action="/add_categories" method="POST" id="add-category-form" class="add-category-form" name="add-category-form">
+                      <div class="modal-body">
+                        <div class="mb-3">
+                          <label for="new-category" class="form-label add-category-label">Category</label>
+                          <input class="form-control add-category-input" id="new-category" name="new-category" placeholder="Bacterial wilt">
+                          <textarea class="categories-in-json invisible position-absolute" name="categories-in-json"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary go-back-btn" data-bs-toggle="modal" data-bs-target="#updateMetaDateModal">Back</button>
+                        <button type="button" class="btn btn-primary submit-new-category-btn go-back-btn" data-bs-toggle="modal" data-bs-target="#updateMetaDateModal">Add New Option</button>
+                      </div>
+                    </form>
+
+              </div>
+            </div>
+          </div>
+
+
+
+          <!-- Modal for Inspect Popup -->
+          <div class="modal fade" id="inspectModal" tabindex="-1" aria-labelledby="inspectModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="inspectModalLabel">Inspect Specimen</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-7 d-flex justify-content-center align-items-center flex-column">
+                      <img id="inspectImage" src="" alt="Image Placeholder" style="width: 100%; height: 100%; max-width: 700px; max-height: 400px;">
+                      <div class="d-flex mt-3">
+                        <button type="button" class="btn btn-secondary mr-2 custom-button" id="prevButton"><< Prev</button>
+                        <button type="button" class="btn btn-secondary custom-button" id="nextButton">Next >></button>
+
+                      </div>
+                    </div>
+                    <div class="col-5 d-flex align-items-center justify-content-center flex-column">
+                      <table id="modalTable" class="table" style="width: 100%; max-width: 100%; max-height: 40vh; overflow: auto;">
+                        <!-- ... table content will be inserted here ... -->
+                        <colgroup>
+                          <col style="width: 50%;">
+                          <col style="width: 50%;">
+                      </colgroup>
+                        <tbody>
+                          <!-- Rows -->
+                          <tr>
+                            <td style="border: 1px solid white; background-color: rgb(56, 56, 56); color: white; font-size: 12px;">Filename</td>
+                            <td id="modalfilenameDisplay" style="border: 1px solid white; background-color: rgb(56, 56, 56); color: white; font-size: 12px;"></td>
+                          </tr>
+                          <tr>
+                            <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Tree ID</td>
+                            <td id="modaltreeidDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+                          </tr>
+                          <tr>
+                            <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Diagnosis</td>
+                            <td id="modaldiagnosisDisplay"style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+                          </tr>
+                          <tr>
+                            <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Author</td>
+                            <td id="modalauthorDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+                          </tr>
+                          <tr>
+                            <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Part</td>
+                            <td id="modalpartDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+                          </tr>
+                          <tr>
+                            <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Status</td>
+                            <td id="modalstatusDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+                          </tr>
+                          <tr>
+                            <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Location</td>
+                            <td id="modallocationDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+                          </tr>
+                          <tr>
+                            <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Captured Time</td>
+                            <td id="modalcapturetimeDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+                          </tr>
+                          <tr>
+                            <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Modified Time</td>
+                            <td id="modalmodifiedtimeDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+                          </tr>
+                          <!-- Add more rows as needed -->
+                        </tbody>
+                      </table>
+                      <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#updateMetaDateModal">Update Metadata</button>
+                    </div>
+                  </div>
+                  <!-- New Row -->
+                  <div class="row mt-3">
+                    <div class="col-12 d-flex justify-content-end">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Return to Gallery View</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Quarantine Modal -->
+          <div class="modal fade form-modal" id="quarantineModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Quarantine Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form action="/quarantine" method="POST">
+                <span class="invisible position-absolute"><input class="filename-input" name="filename-input"></input></span>
+                <div class="modal-body text-center mb-4">
+                  <img id="quarantineImage" src="" alt="Quarantine Image" style="width: 100%; height: 100%; max-width: 450px; max-height: 350px;">
+                  <p class="mb-3 mt-2">Are you sure you wish to<br>quarantine<br><span id="quarantineText" class="fw-bold"></span></p>
+                  <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-danger me-3" id="confirmQuarantine">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+      </main>
+
+      <aside class="w-25 mx-3">
+        <div class="text-center">
+          <!-- Image box -->
+          <div class="mb-3 p-3 border rounded" style="height: 350px;">
+            <img id="placeholder" src="placeholder-image.jpg" alt="Image Placeholder" style="width: 100%; height: 100%;">
+          </div>
+          
+          <!-- Equal-width Buttons -->
+          <div class="row mt-2">
+            <div class="col">
+              <button class="btn btn-primary btn-block mb-3" onclick="inspect()">Inspect</button>
+            </div>
+            <div class="col">
+              <button id="quarantineButton" class="btn btn-danger btn-block mb-3" onclick="quarantine()">Quarantine</button>
+            </div>
+          </div>
+          
+          <!-- Table -->
+          <table id="initialTable" class="table mx-auto" style="background-color: black; width: 80%; border: 1px solid black;">
+            <colgroup>
+              <col style="width: 50%;">
+              <col style="width: 50%;">
+          </colgroup>
+            <tbody>
+              <!-- Rows -->
+              <tr>
+                <td style="border: 1px solid white; background-color: rgb(56, 56, 56); color: white; font-size: 12px;">Filename</td>
+                <td id="filenameDisplay" style="border: 1px solid white; background-color: rgb(56, 56, 56); color: white; font-size: 12px;"></td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Tree ID</td>
+                <td id="treeidDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Diagnosis</td>
+                <td id="diagnosisDisplay"style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Author</td>
+                <td id="authorDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Part</td>
+                <td id="partDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Status</td>
+                <td id="statusDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Location</td>
+                <td id="locationDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Captured Time</td>
+                <td id="capturetimeDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Modified Time</td>
+                <td id="modifiedtimeDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+              </tr>
+              <!-- Add more rows as needed -->
+            </tbody>
+          </table>
+          
+          <!-- Update Metadata Button -->
+          <div class="mt-2">
+            <button class="btn btn-info btn-block" data-bs-toggle="modal" data-bs-target="#updateMetaDateModal">Update Metadata</button>
+          </div>
+          
+        </div>
+      </aside>
+
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+      crossorigin="anonymous"
+    ></script>
+
+
+  </body>
+</html>
