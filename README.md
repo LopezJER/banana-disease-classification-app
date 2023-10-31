@@ -1,5 +1,5 @@
-# Image Data Asset Management Tool
-**Description:** GUI-based app that supports the training of banana disease detection models.
+# Banana Disease Classification App
+**Description:** Provides AI-assisted automatic labelling of banana images with unknown disease classes.
 
 ---
 
@@ -14,7 +14,7 @@
 ---
 
 ## Description
-Image Data Asset Management Tool is a graphical user interface (GUI) based app that supports the training of banana disease detection models by facilitating efficient image validation, updating, and management.
+Banana Disease Classification App aims to provide AI capabilities to the existing tool, allowing AI-assisted automatic labelling of banana images with unknown disease classes.
 
 ### Technologies
 - Python 3
@@ -22,8 +22,12 @@ Image Data Asset Management Tool is a graphical user interface (GUI) based app t
 - SQLite 3
 - Flask-SQLAlchemy 3
 - pandas 2
+- Tensorflow
+- scikit-learn
+- Jupyter
+- NumPy
 
-[&#9650; Back to the Top](#image-data-asset-management-tool)
+[&#9650; Back to the Top](#banana-disease-classification-app)
 
 ---
 
@@ -62,7 +66,7 @@ Image Data Asset Management Tool is a graphical user interface (GUI) based app t
 
 - If an error occurs, try repeating the steps.
 
-[&#9650; Back to the Top](#image-data-asset-management-tool)
+[&#9650; Back to the Top](#banana-disease-classification-app)
 
 ### Install in a Docker Container
 
@@ -97,20 +101,19 @@ Image Data Asset Management Tool is a graphical user interface (GUI) based app t
 
 - If an error occurs, try repeating the steps.
 
-[&#9650; Back to the Top](#image-data-asset-management-tool)
+[&#9650; Back to the Top](#banana-disease-classification-app)
 
 ---
 
 ## Goals & Instructions
 
-Kindly download the sample dataset at this [Google Drive](https://drive.google.com/drive/folders/1ozIIgAa56q-YADreYt_tZJJvDGT0eVwA?usp=sharing).
+It hosts the necessary components for preparing a dataset for banana disease image classification, training and evaluating a banana disease classifier, and deploying it to a web application. Specifically, it contains
+  - Data engineering files such as scripts used to preprocess and split the dataset,
+  - Classification models and Jupyter notebooks clearly documeting the training and evaluation process of the models, and
+  - The Flask web application that requests predictions from the best-performing banana disease classification model.
 
+Please download the dataset at: 
+- Download the dataset: [GoogleDrive Link](https://drive.google.com/file/d/1B_bPOivLtsHwtGcYVOl8i3TNsZMcx-Sy/view?usp=sharing) 
+- Alternatively, copy and past the link: https://drive.google.com/file/d/1B_bPOivLtsHwtGcYVOl8i3TNsZMcx-Sy/view?usp=sharing
 
-The objective of this project is to develop an image data asset management tool tailored to our specific needs. The tool's primary purpose is to support the training of our banana disease detection models by facilitating efficient image validation, updating, and management. By creating a user-friendly graphical user interface (GUI), we aim to streamline the process of handling image assets and maximize the accuracy of our detection models. Additionally, the tool will prove invaluable as we gather images from diverse fieldwork sites, enabling us to establish a cohesive and organized system for uploading, validating, and maintaining these images.
-
-Project Goals:
-1.	Improved Querying: The tool should provide a straightforward mechanism to search images for visual inspection. Notably, the tool should allow filtering of images based on specific metadata.
-2.	Easy Updating: The GUI should enable authorized users to easily update image metadata. This feature is vital for refining the accuracy of our disease detection models over time.
-3.	Efficient Workflow: By incorporating a user-friendly interface, the tool aims to expedite the process of validating and managing images. This efficiency will lead to quicker model training and improvements in our detection capabilities.
-
-[&#9650; Back to the Top](#image-data-asset-management-tool)
+[&#9650; Back to the Top](#banana-disease-classification-app)
