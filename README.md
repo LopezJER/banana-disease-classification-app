@@ -22,7 +22,7 @@ Banana Disease Classification App aims to provide AI capabilities to the existin
 - SQLite 3
 - Flask-SQLAlchemy 3
 - pandas 2
-- Tensorflow
+- TensorFlow
 - scikit-learn
 - Jupyter
 - NumPy
