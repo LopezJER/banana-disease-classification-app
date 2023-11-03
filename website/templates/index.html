@@ -232,7 +232,7 @@
             type="button"
             class="btn btn-primary my-3"
           >
-            Copy to ...
+            Diagnose batch
           </button>
         </div>
         
@@ -492,7 +492,14 @@
                           <!-- Add more rows as needed -->
                         </tbody>
                       </table>
-                      <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#updateMetaDateModal">Update Metadata</button>
+                      <div style="margin-top: -10px; margin-left: 15px; display: flex; flex-direction: column; align-items: center;">
+                        <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#updateMetaDateModal">Update Metadata</button>
+                        <button type="button" class="btn btn-primary mt-3">Diagnose specimen</button>
+                        <div class="prediction-box" style="margin-top: 15px">
+                            <h6>Prediction:<span></span></h6>
+                            <h6>Confidence:<span></span></h6>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <!-- New Row -->
