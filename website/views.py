@@ -493,3 +493,12 @@ def quarantine():
         # Handle the error appropriately, e.g., return an error response
     
     return redirect("/")
+
+@views.route("/diagnose_specimen", methods=["POST"])
+def diagnose_specimen():
+    # Perform your CNN model prediction here and get the prediction and confidence
+    prediction = "Healthy"  # Replace with your actual prediction
+    confidence = "90%"  # Replace with your actual confidence value
+
+    # Return the prediction and confidence as JSON response
+    return jsonify({"prediction": prediction, "confidence": confidence})

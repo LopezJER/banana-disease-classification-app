@@ -572,13 +572,13 @@ updateMetadataModal.addEventListener("show.bs.modal", () => {
   currentPart = document.querySelector("#partDisplay");
   currentStatus = document.querySelector("#statusDisplay");
   currentLocation = document.querySelector("#locationDisplay");
-  
+
   diagnosisCheckBoxes = document.querySelectorAll("#updateMetaDateModal .diagnosis-container > div > input");
   authorOptions = document.querySelectorAll("#updateMetaDateModal .author-select > option");
   partOptions = document.querySelectorAll("#updateMetaDateModal .part-select > option");
   statusOptions = document.querySelectorAll("#updateMetaDateModal .status-select > option");
   locationOptions = document.querySelectorAll("#updateMetaDateModal .location-select > option");
-  
+
   // Split the diagnosis text into an array of strings
   let diagnoses = currentDiagnosis.textContent.split(";");
   // Remove extra whitespaces at the start and end to ensure that the format matches
@@ -590,7 +590,7 @@ updateMetadataModal.addEventListener("show.bs.modal", () => {
   for (checkBox of diagnosisCheckBoxes) {
     if (diagnoses.includes(checkBox.nextElementSibling.textContent.trim())) {
       checkBox.checked = true;
-    }  
+    }
     else checkBox.checked = false;
   }
 
@@ -622,4 +622,15 @@ updateMetadataModal.addEventListener("show.bs.modal", () => {
     }
     else option.selected = false;
   }
+});
+
+document.getElementById("diagnose-button").addEventListener("click", function () {
+  fetch("/diagnose_specimen", {
+    method: "POST",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      document.getElementById("prediction").textContent = data.prediction;
+      document.getElementById("confidence").textContent = data.confidence;
+    });
 });
