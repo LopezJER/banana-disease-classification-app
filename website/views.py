@@ -12,6 +12,13 @@ from sqlalchemy import or_
 import json
 import shutil
 
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.models import load_model
+
+import io
+import base64
+
 # Connect to the database
 db = SQLAlchemy()
 engine = db.create_engine("sqlite:///database/imageDataAssetManagementTool.db")
@@ -513,4 +520,28 @@ def diagnose_specimen():
     confidence = "90%"  # Replace with your actual confidence value
 
     # Return the prediction and confidence as JSON response
+    return jsonify({"prediction": prediction, "confidence": confidence})
+
+
+@views.route("/diagnose_batch", methods=["POST"])
+def diagnose_batch():
+    # TODO: Get the model
+    model = load_model("")
+
+    # TODO: Decode jpg to insteaad of png
+    message = request.get_json(force=True)
+    encoded = message["image"]
+    decoded = base64.b64decode(encoded)
+    image = Image.open(io.BytesIO(decoded))
+
+    processed_image = tf.keras.applications.resnet50.preprocess_input(image)
+    
+    predictions = model.predict(processed_image).tolist()
+    
+    # Loop through predictions find the highest confidence and
+    # print(p)
+
+    prediction = ""
+    confidence = 0
+
     return jsonify({"prediction": prediction, "confidence": confidence})
