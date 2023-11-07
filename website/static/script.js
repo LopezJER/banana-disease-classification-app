@@ -720,10 +720,54 @@ $(document).ready(function () {
 });
 
 
+
+// Convert images to base64
+const toDataURL = url => fetch(url)
+.then(response => response.blob())
+.then(blob => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onloadend = () => resolve(reader.result);
+  reader.onerror = reject;
+  reader.readAsDataURL(blob);
+}))
+
+
+
+
 const diagnoseBatchBtn = document.querySelector(".diagnose-batch-btn");
 diagnoseBatchBtn.addEventListener("click", () => {
   // TODO: Get all images
+  let imageSources = [];
+  let images = document.querySelectorAll(".gallery-container > div > img");
+  console.log("images");
+  images.forEach(image => {
+    console.log(image.src);
+    imageSources.push(image.src);
+  });
+
+  console.log(images.length);
+  console.log(imageSources);
   // TODO: COnvert image (jpg) to base64
+
+  let imagesInBase64 = [];
+  imageSources.forEach(imageSource => {
+    toDataURL(imageSource)
+      .then(dataUrl => {
+        console.log("ADDING BASe64");
+        imagesInBase64.push(dataUrl)
+        // console.log("TAPOS NA BA?");
+        console.log(imagesInBase64);
+        console.log(imagesInBase64.length);
+        
+        if (imageSources.length === imagesInBase64.length) {
+          console.log("SENDING POST REQ");
+        }
+
+      })
+    
+    });
+    
   // TODO: Save all images in a array
   // TODO: Send post req
+  console.log("SEND POST");
 });
