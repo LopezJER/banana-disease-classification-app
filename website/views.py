@@ -18,8 +18,9 @@ import tensorflow as tf
 import keras_applications
 from keras.models import Sequential, load_model
 from keras.preprocessing.image import ImageDataGenerator, img_to_array
-from keras.applications.resnet50 import ResNet50
-from keras.applications.resnet50 import preprocess_input
+from keras.applications.mobilenet import MobileNet
+from keras.applications.mobilenet import preprocess_input
+
 
 # Connect to the database
 db = SQLAlchemy()
@@ -516,7 +517,7 @@ def quarantine():
 
 def get_model():
     global model
-    model = load_model('125units-epoch16-83.54%-VGG16-model.h5')
+    model = load_model('input model here')
     print(" * Model loaded!")
 
 @views.route("/diagnose_specimen", methods=["POST"])
