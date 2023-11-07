@@ -572,13 +572,13 @@ updateMetadataModal.addEventListener("show.bs.modal", () => {
   currentPart = document.querySelector("#partDisplay");
   currentStatus = document.querySelector("#statusDisplay");
   currentLocation = document.querySelector("#locationDisplay");
-
+  
   diagnosisCheckBoxes = document.querySelectorAll("#updateMetaDateModal .diagnosis-container > div > input");
   authorOptions = document.querySelectorAll("#updateMetaDateModal .author-select > option");
   partOptions = document.querySelectorAll("#updateMetaDateModal .part-select > option");
   statusOptions = document.querySelectorAll("#updateMetaDateModal .status-select > option");
   locationOptions = document.querySelectorAll("#updateMetaDateModal .location-select > option");
-
+  
   // Split the diagnosis text into an array of strings
   let diagnoses = currentDiagnosis.textContent.split(";");
   // Remove extra whitespaces at the start and end to ensure that the format matches
@@ -590,7 +590,7 @@ updateMetadataModal.addEventListener("show.bs.modal", () => {
   for (checkBox of diagnosisCheckBoxes) {
     if (diagnoses.includes(checkBox.nextElementSibling.textContent.trim())) {
       checkBox.checked = true;
-    }
+    }  
     else checkBox.checked = false;
   }
 
@@ -622,6 +622,64 @@ updateMetadataModal.addEventListener("show.bs.modal", () => {
     }
     else option.selected = false;
   }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Function to update the placeholder image
+  function updatePlaceholderWithFirstImage() {
+    var firstImage = document.querySelector('.gallery-container img');
+    var firstImageUrl = firstImage.getAttribute('src');
+    var firstImageFileName = firstImageUrl.split('/').pop();
+    var placeholder = document.getElementById('placeholder');
+    currentImageIndex = 0;
+    placeholder.setAttribute('src', firstImageUrl);
+    displayFilename(firstImageFileName);
+  }
+
+  // Initial call to update the placeholder with the first image
+  updatePlaceholderWithFirstImage();
+  function attachPaginationListeners() {
+    document.querySelectorAll('.pagination-link').forEach(link => {
+      link.addEventListener('click', function(event) {
+        event.preventDefault();
+        const pageUrl = this.href;
+        const pageNumber = pageUrl.split('=')[1]; // Extract page number from URL
+
+        history.pushState({}, '', `?page=${pageNumber}`); // Update URL
+
+        fetch(pageUrl)
+          .then(response => response.text())
+          .then(html => {
+            console.log('Received HTML:', html);
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(html, 'text/html');
+            const newImages = newDoc.querySelector('.gallery-container').querySelectorAll('img');
+
+            const galleryContainer = document.querySelector('.gallery-container');
+            const existingImages = galleryContainer.querySelectorAll('img');
+
+            newImages.forEach((newImage, index) => {
+              console.log('Updating image', index, 'with src:', newImage.src);
+              existingImages[index].src = newImage.src; // Update src attribute of existing images
+            });
+
+            const paginationContainer = document.querySelector('.pagination');
+            const newPagination = newDoc.querySelector('.pagination');
+
+            paginationContainer.innerHTML = newPagination.innerHTML; // Update pagination
+
+
+            // After updating gallery container and pagination, update the placeholder with the first image
+            updatePlaceholderWithFirstImage();
+
+            attachPaginationListeners(); // Re-attach event listeners after updating the pagination
+          })
+          .catch(error => console.error('Error fetching page:', error));
+      });
+    });
+  }
+
+  attachPaginationListeners(); // Attach event listeners initially
 });
 
 document.getElementById("diagnose-button").addEventListener("click", function () {

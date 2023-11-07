@@ -24,6 +24,12 @@ views = Blueprint('views', __name__)
 
 @views.route('/')
 def index():
+    page = request.args.get('page', 1, type=int)  # Get the page number from the URL query parameter (default is 1)
+    per_page = 20  # Set the number of items per page
+    
+    start = (page - 1) * per_page
+    end = start + per_page
+
     # Define the path to the "uploads" directory
     uploads_dir = os.path.join(os.getcwd(), 'website', 'static', 'uploads')
 
@@ -153,10 +159,15 @@ def index():
             else:
                 filtered_image_files = []
 
-        return render_template('index.html', file_names=filtered_image_files, df=df, filename_search_term=filename_search_term, is_filename_search=is_filename_search, tree_id_search_term=tree_id_search_term, is_tree_id_search=is_tree_id_search, matching_filename=matching_filename, diagnosis_filter=diagnosis_filter, author_filter=author_filter, part_filter=part_filter, status_filter=status_filter, location_filter=location_filter)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return render_template('gallery_content.html', file_names=filtered_image_files[start:end])
+        else:
+            # Handle regular page request as before
+            return render_template('index.html', file_names=filtered_image_files[start:end], df=df, filename_search_term=filename_search_term, is_filename_search=is_filename_search, tree_id_search_term=tree_id_search_term, is_tree_id_search=is_tree_id_search, matching_filename=matching_filename, diagnosis_filter=diagnosis_filter, author_filter=author_filter, part_filter=part_filter, status_filter=status_filter, location_filter=location_filter, page=page, per_page=per_page, total_files=len(filtered_image_files))
     else:
         # Handle the case when the "uploads" directory does not exist
         return render_template('index.html', file_names=[], message="Uploads directory is empty or doesn't exist.")
+
 
 
 # Route for upload POST method
@@ -493,6 +504,7 @@ def quarantine():
         # Handle the error appropriately, e.g., return an error response
     
     return redirect("/")
+
 
 @views.route("/diagnose_specimen", methods=["POST"])
 def diagnose_specimen():

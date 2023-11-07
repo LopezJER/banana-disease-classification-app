@@ -50,9 +50,12 @@ table#initialTable td {
   font-size: 12px;
 }
 
+
 .custom-button {
   margin-right: 10px; /* Adjust the value as needed */
 }
+
+
 
 .popup {
   display: none;
@@ -79,6 +82,33 @@ table#initialTable td {
   height: auto;
 }
 
+
+
+.pagination a {
+  font-size: 1rem;
+  text-decoration: none;
+  color: #000000;
+}
+
+
+.pagination .current {
+  font-weight: bold;
+  color: #50c1e6;
+  padding: 0.2rem;
+}
+
+
+.pagination-borders {
+  padding: 0.5rem;
+  border: 1px solid black;
+}
+
+
+.pagination-border.current {
+  border: 1px solid black;
+}
+
+
 .prediction-box {
   background-color: #aba6a6;
   border: 1px solid #ccc;
@@ -87,7 +117,3 @@ table#initialTable td {
   font-weight: bold;
   width: 200px;
 }
-
-/* .input-placeholder {
-  visibil
-} */

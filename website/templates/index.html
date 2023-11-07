@@ -227,6 +227,32 @@
             {% endfor %}
           </div>
         </div>
+
+        <!-- Check if there are images available before rendering pagination -->
+        {% if file_names %}
+        <div class="pagination mt-3 d-flex justify-content-end">
+          <div class="pagination-borders">
+            {% if page > 1 %}
+              <a href="?page=1" class="pagination-link">First</a>
+              <a href="?page={{ page - 1 }}" class="pagination-link">Previous</a>
+            {% endif %}
+
+            {% for i in range(1, (total_files//per_page) + 2) %}
+              {% if i == page %}
+                <span class="pagination-border current">{{ i }}</span>
+              {% else %}
+                <a href="?page={{ i }}" class="pagination-link">{{ i }}</a>
+              {% endif %}
+            {% endfor %}
+
+            {% if page < (total_files//per_page) + 1 %}
+              <a href="?page={{ page + 1 }}" class="pagination-link">Next</a>
+              <a href="?page={{ (total_files//per_page) + 1 }}" class="pagination-link">Last</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
         <div class="d-flex justify-content-end">
           <button
             type="button"
@@ -424,6 +450,8 @@
             </div>
           </div>
 
+
+
           <!-- Modal for Inspect Popup -->
           <div class="modal fade" id="inspectModal" tabindex="-1" aria-labelledby="inspectModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -435,19 +463,20 @@
                 <div class="modal-body">
                   <div class="row">
                     <div class="col-7 d-flex justify-content-center align-items-center flex-column">
-                      <img id="inspectImage" src="" alt="Image Placeholder" style="width: 100%; height: 100%; max-width: 700px; max-height: 400px;" />
+                      <img id="inspectImage" src="" alt="Image Placeholder" style="width: 100%; height: 100%; max-width: 700px; max-height: 400px;">
                       <div class="d-flex mt-3">
                         <button type="button" class="btn btn-secondary mr-2 custom-button" id="prevButton"><< Prev</button>
                         <button type="button" class="btn btn-secondary custom-button" id="nextButton">Next >></button>
+
                       </div>
                     </div>
                     <div class="col-5 d-flex align-items-center justify-content-center flex-column">
                       <table id="modalTable" class="table" style="width: 100%; max-width: 100%; max-height: 40vh; overflow: auto;">
                         <!-- ... table content will be inserted here ... -->
                         <colgroup>
-                          <col style="width: 50%;" />
-                          <col style="width: 50%;" />
-                        </colgroup>
+                          <col style="width: 50%;">
+                          <col style="width: 50%;">
+                      </colgroup>
                         <tbody>
                           <!-- Rows -->
                           <tr>
@@ -460,7 +489,7 @@
                           </tr>
                           <tr>
                             <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Diagnosis</td>
-                            <td id="modaldiagnosisDisplay" style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
+                            <td id="modaldiagnosisDisplay"style="border: 1px solid white; background-color: black; color: white; font-size: 12px;"></td>
                           </tr>
                           <tr>
                             <td style="border: 1px solid white; background-color: black; color: white; font-size: 12px;">Author</td>
@@ -509,7 +538,7 @@
               </div>
             </div>
           </div>
-          
+  
           <!-- Quarantine Modal -->
           <div class="modal fade form-modal" id="quarantineModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog">
