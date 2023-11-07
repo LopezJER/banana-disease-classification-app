@@ -172,3 +172,4 @@ cython_debug/
 # Exclude uploaded files to be committed
 /website/static/uploads/*
 /website/static/temp/*
+/models/*

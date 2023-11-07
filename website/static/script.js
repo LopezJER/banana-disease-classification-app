@@ -722,14 +722,14 @@ $(document).ready(function () {
 
 
 // Convert images to base64
-// const toDataURL = url => fetch(url)
-// .then(response => response.blob())
-// .then(blob => new Promise((resolve, reject) => {
-//   const reader = new FileReader();
-//   reader.onloadend = () => resolve(reader.result);
-//   reader.onerror = reject;
-//   reader.readAsDataURL(blob);
-// }))
+const toDataURL = url => fetch(url)
+.then(response => response.blob())
+.then(blob => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onloadend = () => resolve(reader.result);
+  reader.onerror = reject;
+  reader.readAsDataURL(blob);
+}))
 
 
 
@@ -749,15 +749,15 @@ diagnoseBatchBtn.addEventListener("click", () => {
   console.log(imageSources);
   // TODO: COnvert image (jpg) to base64
 
-  // let imagesInBase64 = [];
+  let imagesInBase64 = [];
   imageSources.forEach(imageSource => {
-    // toDataURL(imageSource)
-    //   .then(dataUrl => {
-    //     console.log("ADDING BASe64");
-        // imagesInBase64.push(dataUrl);
-        // console.log("TAPOS NA BA?");
-        // console.log(imagesInBase64);
-        // console.log(imagesInBase64.length);
+    toDataURL(imageSource)
+      .then(dataUrl => {
+        console.log("ADDING BASe64");
+        imagesInBase64.push(dataUrl);
+        console.log("TAPOS NA BA?");
+        console.log(imagesInBase64);
+        console.log(imagesInBase64.length, imageSources.length);
         
 
       // Define the input string and the specific character
@@ -776,33 +776,33 @@ diagnoseBatchBtn.addEventListener("click", () => {
       // }
 
       // Output the result
-      console.log("Result:", imageSources); 
+      console.log("Result:", imagesInBase64); 
+
+        if (imageSources.length === imagesInBase64.length) {
+        console.log("SENDING POST REQ");
+        message = {
+          images: imagesInBase64
+        }
+        console.log(message);
+
+        fetch("/diagnose_batch", {
+          method: "POST",
+          body: JSON.stringify(message),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8"
+          }
+        })
+          // .then((response) => response.json())
+          // .then((json) => console.log(json));
 
 
+      }
       })
 
-        if (true) {
-          console.log("SENDING POST REQ");
-          message = {
-            images: imageSources
-          }
-          console.log(message);
-
-          fetch("/diagnose_batch", {
-            method: "POST",
-            body: JSON.stringify(message),
-            headers: {
-              "Content-type": "application/json; charset=UTF-8"
-            }
-          })
-            // .then((response) => response.json())
-            // .then((json) => console.log(json));
-
-
-        }
 
     
       console.log("SEND POST");
+  });
 });
     
   // TODO: Save all images in a array

@@ -527,6 +527,16 @@ def get_model():
     model = load_model('input model here')
     print(" * Model loaded!")
 
+def preprocess_images(image, target_size):
+    if image.mode != "RGB":
+        image = image.convert("RGB")
+    image = image.resize(target_size)
+    image = img_to_array(image)
+    image = np.expand_dims(image, axis=0)
+    
+    return image
+
+
 @views.route("/diagnose_specimen", methods=["POST"])
 def diagnose_specimen():
     try:
@@ -580,51 +590,48 @@ def diagnose_batch():
 
 
     # TODO: Get the model
-    model = load_model("./models/laguna_banana_model_mobilenet.h5")
-    print(model)
+    model = load_model("models/laguna_banana_model_resnet92.41.h5")
 
     # TODO: Decode jpg to insteaad of png
     message = request.get_json(force=True)
-    base64_images = message["images"]
-    # print(base64_images)
+    images_paths = message["images"]
     
+    # print(base64_images)
     # decoded_images = [base64.b64decode(base64_img) for base64_img in base64_images]
-    decoded_images = base64_images.copy()
     # deoded_images = [os.join.path("./static/uploads/", filename)]
-    decoded_images = ["website/static/uploads/00b668ea-e4f9-41be-a115-313568f0a43e.jpg"]
+    
+    # TODO: Get all urls
+    images_paths = ["website/static/uploads/00b668ea-e4f9-41be-a115-313568f0a43e.jpg"]
     # # print(decoded_images)
     
-    # processed_images = []
-    for img in decoded_images:
+    predictions = []
+    # processed_images = [] 
+    for path in images_paths:
 
-        # image = Image.open(io.BytesIO(img))
+        # Preprocess image
+        print(path)
+        # image = base64.b64decode(path)
+        # image = Image.open(io.BytesIO(image)) 
+        image = tf.image.decode_image(tf.io.read_file(path))
+        # print(image)
+        image = tf.keras.applications.resnet50.preprocess_input(image)
+        # processed_image = preprocess_images(image, target_size=(224, 224))
+        # processed_image = image.resize(processed_image, (224, 224))
+        image = tf.image.resize(image, (224, 224))
+        # processed_image = image / 255.0   
+        processed_image = np.expand_dims(image, axis=0)
+        
+        print("!", processed_image)
+        # Predict
+        prediction = model.predict(processed_image).tolist()
+        predictions.append(prediction)
 
-        # processed_image = tf.keras.application.resnet50.preprocess_input(image)
-        # processed_images.append(processed_image)
-    
-    
-        # image = tf.io.decode_image(tf.io.read_file(img))
-        # image = tf.io.decode_image(tf.io.read_file(img))
-        image = tf.io.read_file(img)
-        image = tf.image.decode_jpeg(image, channels=3)
-        print(image)
+    print(predictions)
 
-
-    # images = [Image.open(io.BytesIO(decoded_img)) for decoded_img in decoded_images] 
-    # image = Image.open(io.BytesIO(decoded))
-
-    # print(processed_images)
-
-    processed_image = tf.keras.applications.resnet50.preprocess_input(image)
-    print("!", processed_image)
-    # predictions = model.predict(processed_image).tolist()
-    
-    # Loop through predictions find the highest confidence and
-    # print(p)
+    # Write CSV for each image
 
     prediction = ""
     confidence = 0
     # return
 
     return jsonify({"prediction": "HEHE", "confidence": "HEHE"})
-    # return jsonify({"prediction": "HEHE", "confidence": "HEHE"})
