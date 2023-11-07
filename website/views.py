@@ -3,7 +3,6 @@ tracked_filenames = []
 from flask import Blueprint, render_template, request, jsonify, redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
-from flask import jsonify
 import os
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import sessionmaker
@@ -11,6 +10,17 @@ from .models import Image
 from sqlalchemy import or_
 import json
 import shutil
+import base64
+import numpy as np
+import io
+from PIL import Image, UnidentifiedImageError
+import tensorflow as tf
+import keras_applications
+from keras.models import Sequential, load_model
+from keras.preprocessing.image import ImageDataGenerator, img_to_array
+from keras.applications.mobilenet import MobileNet
+from keras.applications.mobilenet import preprocess_input
+
 
 # Connect to the database
 db = SQLAlchemy()
@@ -505,12 +515,52 @@ def quarantine():
     
     return redirect("/")
 
+def get_model():
+    global model
+    model = load_model('input model here')
+    print(" * Model loaded!")
 
 @views.route("/diagnose_specimen", methods=["POST"])
 def diagnose_specimen():
-    # Perform your CNN model prediction here and get the prediction and confidence
-    prediction = "Healthy"  # Replace with your actual prediction
-    confidence = "90%"  # Replace with your actual confidence value
+    try:
+        message = request.get_json(force=True)
+        print("Received message:", message)  # Add this line for debugging
+        encoded = message.get('image')
+        print("Received encoded image data:", encoded)  # Add this line for debugging
 
-    # Return the prediction and confidence as JSON response
-    return jsonify({"prediction": prediction, "confidence": confidence})
+        if encoded:
+            try:
+                decoded = base64.b64decode(encoded)
+                print("Decoding successful")
+            except Exception as decode_error:
+                print("Error decoding base64 data:", decode_error)
+                # Handle the decoding error, e.g., return an error response
+            else:
+                print("No image data provided in the request")
+                # Handle the case when no image data is provided
+
+            try:
+                image = Image.open(io.BytesIO(decoded))
+                image = image.convert('RGB')  # Ensure the image is in RGB format
+                image = image.resize((224, 224))  # Resize the image to the desired input size
+                processed_image = preprocess_input(tf.convert_to_tensor(np.array(image, dtype=np.float32)[tf.newaxis]))
+                prediction = model.predict(processed_image).tolist()
+
+                response = {
+                    'prediction': {
+                        'Black sigatoka': prediction[0][0],
+                        'Bunchy top': prediction[0][1],
+                        'Healthy': prediction[0][2]
+                    }
+                }
+                return jsonify(response)
+            except UnidentifiedImageError:
+                error_response = {'error': 'Unidentified image format'}
+                return jsonify(error_response), 400  # HTTP 400 Bad Request
+        else:
+            error_response = {'error': 'Image not provided in the request'}
+            return jsonify(error_response), 400  # HTTP 400 Bad Request
+    except Exception as e:
+        # Handle other exceptions
+        error_response = {'error': 'Internal server error'}
+        return jsonify(error_response), 500  # HTTP 500 Internal Server Error
