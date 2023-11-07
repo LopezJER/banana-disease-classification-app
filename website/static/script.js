@@ -720,3 +720,10 @@ $(document).ready(function () {
 });
 
 
+const diagnoseBatchBtn = document.querySelector(".diagnose-batch-btn");
+diagnoseBatchBtn.addEventListener("click", () => {
+  // TODO: Get all images
+  // TODO: COnvert image (jpg) to base64
+  // TODO: Save all images in a array
+  // TODO: Send post req
+});

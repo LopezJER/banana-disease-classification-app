@@ -10,17 +10,6 @@ from .models import Image
 from sqlalchemy import or_
 import json
 import shutil
-import base64
-import numpy as np
-import io
-from PIL import Image, UnidentifiedImageError
-import tensorflow as tf
-import keras_applications
-from keras.models import Sequential, load_model
-from keras.preprocessing.image import ImageDataGenerator, img_to_array
-from keras.applications.mobilenet import MobileNet
-from keras.applications.mobilenet import preprocess_input
-
 
 import tensorflow as tf
 from tensorflow import keras
@@ -28,6 +17,17 @@ from tensorflow.keras.models import load_model
 
 import io
 import base64
+import base64
+import numpy as np
+import io
+from PIL import Image, UnidentifiedImageError
+import tensorflow as tf
+import keras.applications
+from keras.models import Sequential, load_model
+from keras.preprocessing.image import ImageDataGenerator, img_to_array
+from keras.applications.mobilenet import MobileNet
+from keras.applications.mobilenet import preprocess_input
+
 
 # Connect to the database
 db = SQLAlchemy()
@@ -535,34 +535,6 @@ def diagnose_specimen():
         encoded = message.get('image')
         print("Received encoded image data:", encoded)  # Add this line for debugging
 
-<<<<<<< HEAD
-    # Return the prediction and confidence as JSON response
-    return jsonify({"prediction": prediction, "confidence": confidence})
-
-
-@views.route("/diagnose_batch", methods=["POST"])
-def diagnose_batch():
-    # TODO: Get the model
-    model = load_model("")
-
-    # TODO: Decode jpg to insteaad of png
-    message = request.get_json(force=True)
-    encoded = message["image"]
-    decoded = base64.b64decode(encoded)
-    image = Image.open(io.BytesIO(decoded))
-
-    processed_image = tf.keras.applications.resnet50.preprocess_input(image)
-    
-    predictions = model.predict(processed_image).tolist()
-    
-    # Loop through predictions find the highest confidence and
-    # print(p)
-
-    prediction = ""
-    confidence = 0
-
-    return jsonify({"prediction": prediction, "confidence": confidence})
-=======
         if encoded:
             try:
                 decoded = base64.b64decode(encoded)
@@ -599,4 +571,27 @@ def diagnose_batch():
         # Handle other exceptions
         error_response = {'error': 'Internal server error'}
         return jsonify(error_response), 500  # HTTP 500 Internal Server Error
->>>>>>> 02a26e2c552fcfb3b6cbf5fb9c1adb4b80cc0b19
+
+
+@views.route("/diagnose_batch", methods=["POST"])
+def diagnose_batch():
+    # TODO: Get the model
+    model = load_model("")
+
+    # TODO: Decode jpg to insteaad of png
+    message = request.get_json(force=True)
+    encoded = message["image"]
+    decoded = base64.b64decode(encoded)
+    image = Image.open(io.BytesIO(decoded))
+
+    processed_image = tf.keras.applications.resnet50.preprocess_input(image)
+    
+    predictions = model.predict(processed_image).tolist()
+    
+    # Loop through predictions find the highest confidence and
+    # print(p)
+
+    prediction = ""
+    confidence = 0
+
+    return jsonify({"prediction": prediction, "confidence": confidence})
