@@ -572,13 +572,13 @@ updateMetadataModal.addEventListener("show.bs.modal", () => {
   currentPart = document.querySelector("#partDisplay");
   currentStatus = document.querySelector("#statusDisplay");
   currentLocation = document.querySelector("#locationDisplay");
-  
+
   diagnosisCheckBoxes = document.querySelectorAll("#updateMetaDateModal .diagnosis-container > div > input");
   authorOptions = document.querySelectorAll("#updateMetaDateModal .author-select > option");
   partOptions = document.querySelectorAll("#updateMetaDateModal .part-select > option");
   statusOptions = document.querySelectorAll("#updateMetaDateModal .status-select > option");
   locationOptions = document.querySelectorAll("#updateMetaDateModal .location-select > option");
-  
+
   // Split the diagnosis text into an array of strings
   let diagnoses = currentDiagnosis.textContent.split(";");
   // Remove extra whitespaces at the start and end to ensure that the format matches
@@ -590,7 +590,7 @@ updateMetadataModal.addEventListener("show.bs.modal", () => {
   for (checkBox of diagnosisCheckBoxes) {
     if (diagnoses.includes(checkBox.nextElementSibling.textContent.trim())) {
       checkBox.checked = true;
-    }  
+    }
     else checkBox.checked = false;
   }
 
@@ -624,7 +624,7 @@ updateMetadataModal.addEventListener("show.bs.modal", () => {
   }
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Function to update the placeholder image
   function updatePlaceholderWithFirstImage() {
     var firstImage = document.querySelector('.gallery-container img');
@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded', function() {
   updatePlaceholderWithFirstImage();
   function attachPaginationListeners() {
     document.querySelectorAll('.pagination-link').forEach(link => {
-      link.addEventListener('click', function(event) {
+      link.addEventListener('click', function (event) {
         event.preventDefault();
         const pageUrl = this.href;
         const pageNumber = pageUrl.split('=')[1]; // Extract page number from URL
@@ -682,13 +682,41 @@ document.addEventListener('DOMContentLoaded', function() {
   attachPaginationListeners(); // Attach event listeners initially
 });
 
-document.getElementById("diagnose-button").addEventListener("click", function () {
-  fetch("/diagnose_specimen", {
-    method: "POST",
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      document.getElementById("prediction").textContent = data.prediction;
-      document.getElementById("confidence").textContent = data.confidence;
-    });
+let base64Image; // Declare base64Image globally
+
+$(document).ready(function () {
+  // Function to handle image selection
+  $("#diagnose-button").click(function (event) {
+    // Get the image data from the 'inspectImage' element
+    const imageElement = document.getElementById("inspectImage");
+    const canvas = document.createElement("canvas");
+    canvas.width = imageElement.width;
+    canvas.height = imageElement.height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(imageElement, 0, 0, canvas.width, canvas.height);
+    const base64Image = canvas.toDataURL("image/jpeg"); // Convert the image to base64
+
+    // Check if base64Image is defined before sending the POST request
+    if (base64Image) {
+      const message = {
+        image: base64Image,
+      };
+      console.log(message);
+      $.post(
+        "/diagnose_specimen", // Your Flask route
+        JSON.stringify(message),
+        function (response) {
+          // Update the HTML with the predictions dynamically
+          for (let className in response.prediction) {
+            $(`#${className}-prediction`).text(response.prediction[className]);
+            $(`#${className}-confidence`).text((response.prediction[className] * 100).toFixed(2) + '%');
+          }
+        }
+      );
+    } else {
+      console.error("Image not selected or processed yet.");
+    }
+  });
 });
+
+
