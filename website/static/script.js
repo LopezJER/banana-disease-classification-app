@@ -722,14 +722,14 @@ $(document).ready(function () {
 
 
 // Convert images to base64
-const toDataURL = url => fetch(url)
-.then(response => response.blob())
-.then(blob => new Promise((resolve, reject) => {
-  const reader = new FileReader();
-  reader.onloadend = () => resolve(reader.result);
-  reader.onerror = reject;
-  reader.readAsDataURL(blob);
-}))
+// const toDataURL = url => fetch(url)
+// .then(response => response.blob())
+// .then(blob => new Promise((resolve, reject) => {
+//   const reader = new FileReader();
+//   reader.onloadend = () => resolve(reader.result);
+//   reader.onerror = reject;
+//   reader.readAsDataURL(blob);
+// }))
 
 
 
@@ -738,35 +738,57 @@ const diagnoseBatchBtn = document.querySelector(".diagnose-batch-btn");
 diagnoseBatchBtn.addEventListener("click", () => {
   // TODO: Get all images
   let imageSources = [];
+  // let imageSources = ["https://www.gravatar.com/avatar/d50c83cc0c6523b4d3f6085295c953e0"];
   let images = document.querySelectorAll(".gallery-container > div > img");
   console.log("images");
   images.forEach(image => {
-    console.log(image.src);
     imageSources.push(image.src);
   });
 
-  console.log(images.length);
+  // console.log(images.length);
   console.log(imageSources);
   // TODO: COnvert image (jpg) to base64
 
-  let imagesInBase64 = [];
+  // let imagesInBase64 = [];
   imageSources.forEach(imageSource => {
-    toDataURL(imageSource)
-      .then(dataUrl => {
-        console.log("ADDING BASe64");
-        imagesInBase64.push(dataUrl)
+    // toDataURL(imageSource)
+    //   .then(dataUrl => {
+    //     console.log("ADDING BASe64");
+        // imagesInBase64.push(dataUrl);
         // console.log("TAPOS NA BA?");
-        console.log(imagesInBase64);
-        console.log(imagesInBase64.length);
+        // console.log(imagesInBase64);
+        // console.log(imagesInBase64.length);
         
-        if (imageSources.length === imagesInBase64.length) {
+
+      // Define the input string and the specific character
+      // let inputString = "example_string@some_value";
+      // let specificCharacter = '@';
+
+      // Split the string based on the specific character and get the right part
+      // let rightPart = imageSource.split("/")[1];
+
+      // paths = [];
+      // console.log(imageSources);
+      // while (imageSource[imageSource.length - 1] !== "/") {
+      //   imageSource.substring(0, imageSource.length() - 1);
+      //   path.push();
+
+      // }
+
+      // Output the result
+      console.log("Result:", imageSources); 
+
+
+      })
+
+        if (true) {
           console.log("SENDING POST REQ");
           message = {
-            images: imagesInBase64
+            images: imageSources
           }
           console.log(message);
 
-          fetch("http://127.0.0.1:5000/diagnose_batch", {
+          fetch("/diagnose_batch", {
             method: "POST",
             body: JSON.stringify(message),
             headers: {
@@ -776,18 +798,17 @@ diagnoseBatchBtn.addEventListener("click", () => {
             // .then((response) => response.json())
             // .then((json) => console.log(json));
 
+
         }
 
-
-      })
     
-    });
+      console.log("SEND POST");
+});
     
   // TODO: Save all images in a array
   // TODO: Send post req
-  console.log("SEND POST");
-});
+// });
 
-const sendPost = () => {
-  $post
-}
+// const sendPost = () => {
+//   $post
+// }

@@ -581,20 +581,42 @@ def diagnose_batch():
 
     # TODO: Get the model
     model = load_model("./models/laguna_banana_model_mobilenet.h5")
+    print(model)
 
     # TODO: Decode jpg to insteaad of png
     message = request.get_json(force=True)
     base64_images = message["images"]
-    print(base64_images)
+    # print(base64_images)
     
-    decoded_images = [base64.b64decode(base64_img) for base64_img in base64_images]
-    print(decoded_images)
+    # decoded_images = [base64.b64decode(base64_img) for base64_img in base64_images]
+    decoded_images = base64_images.copy()
+    # deoded_images = [os.join.path("./static/uploads/", filename)]
+    decoded_images = ["website/static/uploads/00b668ea-e4f9-41be-a115-313568f0a43e.jpg"]
+    # # print(decoded_images)
+    
+    # processed_images = []
+    for img in decoded_images:
 
+        # image = Image.open(io.BytesIO(img))
+
+        # processed_image = tf.keras.application.resnet50.preprocess_input(image)
+        # processed_images.append(processed_image)
     
+    
+        # image = tf.io.decode_image(tf.io.read_file(img))
+        # image = tf.io.decode_image(tf.io.read_file(img))
+        image = tf.io.read_file(img)
+        image = tf.image.decode_jpeg(image, channels=3)
+        print(image)
+
+
+    # images = [Image.open(io.BytesIO(decoded_img)) for decoded_img in decoded_images] 
     # image = Image.open(io.BytesIO(decoded))
 
-    # processed_image = tf.keras.applications.resnet50.preprocess_input(image)
-    
+    # print(processed_images)
+
+    processed_image = tf.keras.applications.resnet50.preprocess_input(image)
+    print("!", processed_image)
     # predictions = model.predict(processed_image).tolist()
     
     # Loop through predictions find the highest confidence and
