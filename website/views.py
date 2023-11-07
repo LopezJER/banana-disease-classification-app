@@ -575,23 +575,34 @@ def diagnose_specimen():
 
 @views.route("/diagnose_batch", methods=["POST"])
 def diagnose_batch():
+    print("PUMASOK?")
+
+
+
     # TODO: Get the model
-    model = load_model("")
+    model = load_model("./models/laguna_banana_model_mobilenet.h5")
 
     # TODO: Decode jpg to insteaad of png
     message = request.get_json(force=True)
-    encoded = message["image"]
-    decoded = base64.b64decode(encoded)
-    image = Image.open(io.BytesIO(decoded))
-
-    processed_image = tf.keras.applications.resnet50.preprocess_input(image)
+    base64_images = message["images"]
+    print(base64_images)
     
-    predictions = model.predict(processed_image).tolist()
+    decoded_images = [base64.b64decode(base64_img) for base64_img in base64_images]
+    print(decoded_images)
+
+    
+    # image = Image.open(io.BytesIO(decoded))
+
+    # processed_image = tf.keras.applications.resnet50.preprocess_input(image)
+    
+    # predictions = model.predict(processed_image).tolist()
     
     # Loop through predictions find the highest confidence and
     # print(p)
 
     prediction = ""
     confidence = 0
+    # return
 
-    return jsonify({"prediction": prediction, "confidence": confidence})
+    return jsonify({"prediction": "HEHE", "confidence": "HEHE"})
+    # return jsonify({"prediction": "HEHE", "confidence": "HEHE"})
