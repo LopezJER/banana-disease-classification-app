@@ -638,13 +638,52 @@
         </div>
       </aside>
 
+    
+    <div>
+      <!-- Modal -->
+      <!-- <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <hgroup>
+                <h1>Loading</h1>
+                <p>Predicting images</p>
+              </hgroup>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+            </div>
+          </div>
+        </div>
+      </div> -->
+      <!-- Button trigger modal -->
+      <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+        Launch static backdrop modal
+      </button> -->
+
+      <!-- Predicting/Loading Modal -->
+      <div class="modal fade predicting-modal loading-modal" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header justify-content-center gap-2">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Predicting...</span>
+              </div>
+              <h1 class="modal-title fs-5">Predicting...</h1>
+              <button type="button" class="btn-close visually-hidden" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
       crossorigin="anonymous"
     ></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 
 
   </body>
