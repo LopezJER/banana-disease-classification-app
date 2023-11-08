@@ -10,12 +10,21 @@ from .models import Image
 from sqlalchemy import or_
 import json
 import shutil
+from datetime import datetime
+import copy
+
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.models import load_model
+
+import io
+import base64
 import base64
 import numpy as np
 import io
 from PIL import Image, UnidentifiedImageError
 import tensorflow as tf
-import keras_applications
+import keras.applications
 from keras.models import Sequential, load_model
 from keras.preprocessing.image import ImageDataGenerator, img_to_array
 from keras.applications.mobilenet import MobileNet
@@ -353,30 +362,53 @@ def update_metadata():
             print("INVALID OPTION", answers.get(answer), categories.get(answer))
             return redirect("/")
 
-    # Prepare raw sql query and its parameters
-    # Convert diagnoses list into string
-    diagnoses = "; ".join(diagnoses)
-    query_params = {
-        "diagnosis": diagnoses,
-        "author": author,
-        "parts": parts,
-        "status": status,
-        "location": location,
-        "filename": filename
-    }
-    query = """
-                UPDATE banana_image
-                SET diagnosis = :diagnosis, 
-                    author = :author, 
-                    part = :parts, 
-                    status = :status, 
-                    location = :location
-                WHERE filename = :filename
-            """
+    try:
+        # Prepare raw sql query and its parameters
+        # Convert diagnoses list into string
+        diagnoses = "; ".join(diagnoses)
+        query_params = {
+            "diagnosis": diagnoses,
+            "author": author,
+            "parts": parts,
+            "status": status,
+            "location": location,
+            "filename": filename
+        }
+        query = """
+                    UPDATE banana_image
+                    SET diagnosis = :diagnosis, 
+                        author = :author, 
+                        part = :parts, 
+                        status = :status, 
+                        location = :location
+                    WHERE filename = :filename
+                """
 
-    # Update database
-    with engine.connect() as conn, conn.begin():
-        conn.execute(text(query), query_params)
+        # Update database
+        with engine.connect() as conn, conn.begin():
+            conn.execute(text(query), query_params)
+
+    except:
+        # Prepare raw sql query and its parameters
+        query_params = {
+            "diagnosis": diagnoses,
+            "author": author,
+            "parts": parts,
+            "status": status,
+            "filename": filename
+        }
+        query = """
+                    UPDATE banana_image
+                    SET disease = :diagnosis, 
+                        author = :author, 
+                        part = :parts, 
+                        integrity = :status
+                    WHERE imageID = :filename
+                """
+
+        # Update database
+        with engine.connect() as conn, conn.begin():
+            conn.execute(text(query), query_params)
 
     print(f"EDITED")
 
@@ -444,30 +476,57 @@ def get_details(filename):
     conn = engine.connect()
 
     try:
-        # Query the database for the details of the image with the given filename
-        result = conn.execute(
-            text("SELECT * FROM banana_image WHERE filename = :filename"),
-            {"filename": filename}  # Use a parameterized query
-        )
+        try: 
+            # Query the database for the details of the image with the given filename
+            result = conn.execute(
+                text("SELECT * FROM banana_image WHERE filename = :filename"),
+                {"filename": filename}  # Use a parameterized query
+            )
 
-        # Fetch the first row (since filename should be unique)
-        row = result.fetchone()
+            # Fetch the first row (since filename should be unique)
+            row = result.fetchone()
 
-        if row:
-            print(row)  # Add this line to see the contents of 'row'
-            return jsonify({
-                'filename': row[0],
-                'diagnosis': row[1],
-                'treeID': row[2],
-                'author': row[3],
-                'part': row[4],
-                'status': row[5],
-                'location': row[6],
-                'captureTime': row[7],
-                'modifiedTime': row[8]
-    })
-        else:
-            return jsonify({"error": "File not found"}), 404
+            if row:
+                print(row)  # Add this line to see the contents of 'row'
+                return jsonify({
+                    'filename': row[0],
+                    'diagnosis': row[1],
+                    'treeID': row[2],
+                    'author': row[3],
+                    'part': row[4],
+                    'status': row[5],
+                    'location': row[6],
+                    'captureTime': row[7],
+                    'modifiedTime': row[8]
+        })
+            else:
+                return jsonify({"error": "File not found"}), 404
+        
+        except:
+            # Query the database for the details of the image with the given filename
+            result = conn.execute(
+                text("SELECT * FROM banana_image WHERE imageID = :filename"),
+                {"filename": filename}  # Use a parameterized query
+            )
+
+            # Fetch the first row (since filename should be unique)
+            row = result.fetchone()
+
+            if row:
+                print(row)  # Add this line to see the contents of 'row'
+                return jsonify({
+                    'filename': row[0],
+                    'diagnosis': row[1],
+                    'treeID': row[2],
+                    'author': row[3],
+                    'part': row[4],
+                    'status': row[5],
+                    'location': None,
+                    'captureTime': None,
+                    'modifiedTime': None
+        })
+            else:
+                return jsonify({"error": "File not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500  # Return a JSON error response
     finally:
@@ -520,6 +579,16 @@ def get_model():
     model = load_model('input model here')
     print(" * Model loaded!")
 
+# def preprocess_images(image, target_size):
+#     if image.mode != "RGB":
+#         image = image.convert("RGB")
+#     image = image.resize(target_size)
+#     image = img_to_array(image)
+#     image = np.expand_dims(image, axis=0)
+    
+#     return image
+
+
 @views.route("/diagnose_specimen", methods=["POST"])
 def diagnose_specimen():
     try:
@@ -564,3 +633,93 @@ def diagnose_specimen():
         # Handle other exceptions
         error_response = {'error': 'Internal server error'}
         return jsonify(error_response), 500  # HTTP 500 Internal Server Error
+
+
+@views.route("/diagnose_batch", methods=["POST"])
+def diagnose_batch():
+    print("PUMASOK?")
+
+    # TODO: Get the model
+    model = load_model("models/laguna_banana_model_resnet92.41.h5")
+
+    # TODO: Decode jpg to insteaad of png
+    message = request.get_json(force=True)
+    images_paths = message["images_paths"]
+    images_info = [{"path": path} for path in images_paths]
+    # other_info = message["other_infos"]
+
+    # TODO: Get all urls
+    for image_info in images_info:
+        path = image_info["path"]
+        parts_of_path = path.split("/")
+        for part in parts_of_path:
+            if part == "static":
+                break
+            parts_of_path.pop(0)
+            
+        print(parts_of_path)
+        path = "/".join(parts_of_path)
+        path = os.path.join("website", path)
+        print(path)
+        image_info["image-id"] = parts_of_path[-1]
+        image_info["path"] = path
+
+
+
+    print(images_info)
+    # print(decoded_images)
+    
+    predictions = ["Healthy", "Bunchy Top", "Black Sigatoka"]
+    for image_info in images_info:
+        path = image_info["path"]
+        # Preprocess image
+        print(path)
+        image = tf.image.decode_image(tf.io.read_file(path))
+
+        image = tf.image.resize(image, (224, 224))
+        # processed_image = image / 255.0   
+        processed_image = np.expand_dims(image, axis=0)
+        
+        # Predict
+        prediction = model.predict(processed_image).tolist()
+        prediction_index = [i for i, confidence in enumerate(prediction[0]) if confidence == max(prediction[0])]
+
+        image_info["prediction"] = "; ".join([predictions[i] for i in prediction_index])
+        image_info["confidence"] = f"{prediction[0][prediction_index[0]]:.4f}"
+
+
+    print(images_info)
+
+    data = {
+        "imageID": [image_info.get("image-id") for image_info in images_info],
+        "prediction": [image_info.get("prediction") for image_info in images_info],
+        "confidence": [image_info.get("confidence") for image_info in images_info],
+    }
+    
+    for datum in copy.deepcopy(data):
+        if not any(data.get(datum)):
+            data.pop(datum)
+
+    now = datetime.now()
+    now = now.strftime("%m-%d-%Y_%H-%M-%S")
+
+
+    df = pd.DataFrame(data)
+    output_file = f"{now}.csv"
+    
+    output_path = os.path.join("website", "static", "csv", "batch_inference", output_file)
+    print(output_path)
+    df.to_csv(output_path, index=False)
+
+    return jsonify("Created Batch Inference file CSV (seen at ./website/static/csv/batch_inference).")
+
+
+# TOOO:
+# - LOADING WHEN BACKEND IS WORKING ON BATCH INFERENCE
+# - SUCCESS MESSAGE/ERROR MESSAGE
+# - CATCH ERROR WITH WRONG MODEL
+# - FIX BUG SA UPLOAD NA D NADEDELETE UNG DATING UPLOADS
+# - ADD COMMENTS TO NOTEBOOK
+# - UPLOAD JUPYTER NOTEBOOKS
+# - ADD FAVICON AND ICON
+# - ADD MY TEST RESULT FOR TESTING MODEL

@@ -719,4 +719,87 @@ $(document).ready(function () {
   });
 });
 
+const loadingModal = document.querySelector(".loading-modal");
+const predictingModal = new bootstrap.Modal('.predicting-modal');
 
+const updateLoadingModal = () => {
+  const spinner = loadingModal.querySelector(".spinner-border");
+  const label = loadingModal.querySelector("h1");
+  const closeBtn = loadingModal.querySelector(".btn-close");
+  const header = loadingModal.querySelector(".modal-header");
+
+  label.textContent = "See predictions at ./website/static/csv/";
+  spinner.classList.add("visually-hidden");
+  closeBtn.classList.remove("visually-hidden");
+  header.classList.add("justify-content-center");
+}
+
+
+loadingModal.addEventListener(("hidden.bs.modal"), () => {
+  const spinner = loadingModal.querySelector(".spinner-border");
+  const label = loadingModal.querySelector("h1");
+  const closeBtn = loadingModal.querySelector(".btn-close");
+  const header = loadingModal.querySelector(".modal-header");
+
+  spinner.classList.remove("visually-hidden");
+  label.textContent = "Predicting...";
+  closeBtn.classList.add("visually-hidden");
+  header.classList.remove("justify-content-center");
+});
+
+
+
+
+
+const diagnoseBatchBtn = document.querySelector(".diagnose-batch-btn");
+diagnoseBatchBtn.addEventListener("click", () => {
+  // TODO: Get all images
+  // let imageSources = ["https://www.gravatar.com/avatar/d50c83cc0c6523b4d3f6085295c953e0"];
+  // const predictingModal = new bootstrap.Modal('.predicting-modal');  
+  predictingModal.show();
+
+  let imgs_paths = [];
+
+  const images = document.querySelectorAll(".gallery-container > div > img");
+  console.log("images");
+
+  
+
+  images.forEach(img => {
+    imgs_paths.push(img.src);
+  });
+
+  console.log("Result:", imgs_paths); 
+
+    if (images.length === imgs_paths.length) {
+    console.log("SENDING POST REQ");
+    message = {
+      images_paths: imgs_paths,
+      // other_infos: other_infos
+    }
+    console.log(message);
+
+    fetch("/diagnose_batch", {
+      method: "POST",
+      body: JSON.stringify(message),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    })
+          .then((response) => updateLoadingModal());
+          // .then((json) => console.log(json));
+      }
+})
+
+
+    
+      console.log("SEND POST");
+
+    
+  // TODO: Save all images in a array
+  // TODO: Send post req
+// });
+
+// const sendPost = () => {
+//   $post
+// }
