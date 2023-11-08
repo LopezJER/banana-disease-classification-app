@@ -10,6 +10,8 @@ from .models import Image
 from sqlalchemy import or_
 import json
 import shutil
+from datetime import datetime
+import copy
 
 import tensorflow as tf
 from tensorflow import keras
@@ -587,8 +589,6 @@ def diagnose_specimen():
 def diagnose_batch():
     print("PUMASOK?")
 
-
-
     # TODO: Get the model
     model = load_model("models/laguna_banana_model_resnet92.41.h5")
 
@@ -601,64 +601,68 @@ def diagnose_batch():
     for image_info in images_info:
         path = image_info["path"]
         parts_of_path = path.split("/")
-        # path = [for part in parts_of_path if ]
         for part in parts_of_path:
             if part == "static":
                 break
             parts_of_path.pop(0)
             
         print(parts_of_path)
-        # path = os.path.join(parts_of_path)
         path = "/".join(parts_of_path)
         path = os.path.join("website", path)
         print(path)
         image_info["image-id"] = parts_of_path[-1]
         image_info["path"] = path
 
-        # website/static/uploads/00abe429-47d0-4387-8d4c-1744bc854215.jpg
-    # images_paths = []//
-    # print(type(images_paths))
-    # for image in images:
-    #     image["prediction"] = "pred"
-    #     image["confidence"] = "conf"
+
 
     print(images_info)
     # print(decoded_images)
     
     predictions = ["Healthy", "Bunchy Top", "Black Sigatoka"]
-    # processed_images = [] 
     for image_info in images_info:
         path = image_info["path"]
         # Preprocess image
         print(path)
-        # image = base64.b64decode(path)
-        # image = Image.open(io.BytesIO(image)) 
         image = tf.image.decode_image(tf.io.read_file(path))
-        # print(image)
-        # image = tf.keras.applications.resnet50.preprocess_input(image)
-        # processed_image = preprocess_images(image, target_size=(224, 224))
-        # processed_image = image.resize(processed_image, (224, 224))
+
         image = tf.image.resize(image, (224, 224))
         # processed_image = image / 255.0   
         processed_image = np.expand_dims(image, axis=0)
         
-        # print("!", processed_image)
         # Predict
         prediction = model.predict(processed_image).tolist()
         prediction_index = [i for i, confidence in enumerate(prediction[0]) if confidence == max(prediction[0])]
-        # print(prediction_index, predictions[prediction_index[0]])
-        # [print(prediction_index, predictions[i]) for i in prediction_index]
-        image_info["prediction"] = [predictions[i] for i in prediction_index]
-        image_info["confidence"] = prediction[0][prediction_index[0]]
-        # predictions.append(prediction)
-        # print(prediction)
+
+        image_info["prediction"] = "; ".join([predictions[i] for i in prediction_index])
+        image_info["confidence"] = f"{prediction[0][prediction_index[0]]:.4f}"
+
+
     print(images_info)
-    # print
 
-    # Write CSV for each image
+    data = {
+        "imageID": [image_info.get("imageID") for image_info in images_info],
+        "disease": [image_info.get("disease") for image_info in images_info],
+        "treeID": [image_info.get("treeID") for image_info in images_info],
+        "author": [image_info.get("author") for image_info in images_info],
+        "part": [image_info.get("part") for image_info in images_info],
+        "integrity": [image_info.get("integrity") for image_info in images_info],
+        "prediction": [image_info.get("prediction") for image_info in images_info],
+        "confidence": [image_info.get("confidence") for image_info in images_info],
+    }
+    
+    for datum in copy.deepcopy(data):
+        if not any(data.get(datum)):
+            data.pop(datum)
 
-    prediction = ""
-    confidence = 0
-    # return
+    now = datetime.now()
+    now = now.strftime("%m-%d-%Y_%H-%M-%S")
 
-    return jsonify({"prediction": "HEHE", "confidence": "HEHE"})
+
+    df = pd.DataFrame(data)
+    output_file = f"{now}.csv"
+    
+    output_path = os.path.join("website", "static", "csv", "batch_inference", output_file)
+    print(output_path)
+    df.to_csv(output_path, index=False)
+
+    return jsonify("Created Batch Inference file CSV (seen at ./website/static/csv/batch_inference).")
