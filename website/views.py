@@ -362,30 +362,53 @@ def update_metadata():
             print("INVALID OPTION", answers.get(answer), categories.get(answer))
             return redirect("/")
 
-    # Prepare raw sql query and its parameters
-    # Convert diagnoses list into string
-    diagnoses = "; ".join(diagnoses)
-    query_params = {
-        "diagnosis": diagnoses,
-        "author": author,
-        "parts": parts,
-        "status": status,
-        "location": location,
-        "filename": filename
-    }
-    query = """
-                UPDATE banana_image
-                SET diagnosis = :diagnosis, 
-                    author = :author, 
-                    part = :parts, 
-                    status = :status, 
-                    location = :location
-                WHERE filename = :filename
-            """
+    try:
+        # Prepare raw sql query and its parameters
+        # Convert diagnoses list into string
+        diagnoses = "; ".join(diagnoses)
+        query_params = {
+            "diagnosis": diagnoses,
+            "author": author,
+            "parts": parts,
+            "status": status,
+            "location": location,
+            "filename": filename
+        }
+        query = """
+                    UPDATE banana_image
+                    SET diagnosis = :diagnosis, 
+                        author = :author, 
+                        part = :parts, 
+                        status = :status, 
+                        location = :location
+                    WHERE filename = :filename
+                """
 
-    # Update database
-    with engine.connect() as conn, conn.begin():
-        conn.execute(text(query), query_params)
+        # Update database
+        with engine.connect() as conn, conn.begin():
+            conn.execute(text(query), query_params)
+
+    except:
+        # Prepare raw sql query and its parameters
+        query_params = {
+            "diagnosis": diagnoses,
+            "author": author,
+            "parts": parts,
+            "status": status,
+            "filename": filename
+        }
+        query = """
+                    UPDATE banana_image
+                    SET disease = :diagnosis, 
+                        author = :author, 
+                        part = :parts, 
+                        integrity = :status
+                    WHERE imageID = :filename
+                """
+
+        # Update database
+        with engine.connect() as conn, conn.begin():
+            conn.execute(text(query), query_params)
 
     print(f"EDITED")
 
