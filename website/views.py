@@ -645,7 +645,8 @@ def diagnose_batch():
     # TODO: Decode jpg to insteaad of png
     message = request.get_json(force=True)
     images_paths = message["images_paths"]
-    images_info = [{"path": path} for path in images_paths] 
+    images_info = [{"path": path} for path in images_paths]
+    # other_info = message["other_infos"]
 
     # TODO: Get all urls
     for image_info in images_info:
@@ -690,12 +691,7 @@ def diagnose_batch():
     print(images_info)
 
     data = {
-        "imageID": [image_info.get("imageID") for image_info in images_info],
-        "disease": [image_info.get("disease") for image_info in images_info],
-        "treeID": [image_info.get("treeID") for image_info in images_info],
-        "author": [image_info.get("author") for image_info in images_info],
-        "part": [image_info.get("part") for image_info in images_info],
-        "integrity": [image_info.get("integrity") for image_info in images_info],
+        "imageID": [image_info.get("image-id") for image_info in images_info],
         "prediction": [image_info.get("prediction") for image_info in images_info],
         "confidence": [image_info.get("confidence") for image_info in images_info],
     }
@@ -720,7 +716,6 @@ def diagnose_batch():
 
 # TOOO:
 # - LOADING WHEN BACKEND IS WORKING ON BATCH INFERENCE
-# - GET OTHER INFO TO INCLUDE IN CSV
 # - SUCCESS MESSAGE/ERROR MESSAGE
 # - CATCH ERROR WITH WRONG MODEL
 # - FIX BUG SA UPLOAD NA D NADEDELETE UNG DATING UPLOADS

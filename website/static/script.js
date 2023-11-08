@@ -740,19 +740,18 @@ diagnoseBatchBtn.addEventListener("click", () => {
   // let imageSources = ["https://www.gravatar.com/avatar/d50c83cc0c6523b4d3f6085295c953e0"];
   const images = document.querySelectorAll(".gallery-container > div > img");
   console.log("images");
-  
-  imgs_paths = [];
+
   images.forEach(img => {
     imgs_paths.push(img.src);
   });
-
 
   console.log("Result:", imgs_paths); 
 
     if (images.length === imgs_paths.length) {
     console.log("SENDING POST REQ");
     message = {
-      images_paths: imgs_paths
+      images_paths: imgs_paths,
+      // other_infos: other_infos
     }
     console.log(message);
 
