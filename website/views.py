@@ -594,39 +594,66 @@ def diagnose_batch():
 
     # TODO: Decode jpg to insteaad of png
     message = request.get_json(force=True)
-    images_paths = message["images"]
-    
-    # print(base64_images)
-    # decoded_images = [base64.b64decode(base64_img) for base64_img in base64_images]
-    # deoded_images = [os.join.path("./static/uploads/", filename)]
-    
-    # TODO: Get all urls
-    images_paths = ["website/static/uploads/00b668ea-e4f9-41be-a115-313568f0a43e.jpg"]
-    # # print(decoded_images)
-    
-    predictions = []
-    # processed_images = [] 
-    for path in images_paths:
+    images_paths = message["images_paths"]
+    images_info = [{"path": path} for path in images_paths] 
 
+    # TODO: Get all urls
+    for image_info in images_info:
+        path = image_info["path"]
+        parts_of_path = path.split("/")
+        # path = [for part in parts_of_path if ]
+        for part in parts_of_path:
+            if part == "static":
+                break
+            parts_of_path.pop(0)
+            
+        print(parts_of_path)
+        # path = os.path.join(parts_of_path)
+        path = "/".join(parts_of_path)
+        path = os.path.join("website", path)
+        print(path)
+        image_info["image-id"] = parts_of_path[-1]
+        image_info["path"] = path
+
+        # website/static/uploads/00abe429-47d0-4387-8d4c-1744bc854215.jpg
+    # images_paths = []//
+    # print(type(images_paths))
+    # for image in images:
+    #     image["prediction"] = "pred"
+    #     image["confidence"] = "conf"
+
+    print(images_info)
+    # print(decoded_images)
+    
+    predictions = ["Healthy", "Bunchy Top", "Black Sigatoka"]
+    # processed_images = [] 
+    for image_info in images_info:
+        path = image_info["path"]
         # Preprocess image
         print(path)
         # image = base64.b64decode(path)
         # image = Image.open(io.BytesIO(image)) 
         image = tf.image.decode_image(tf.io.read_file(path))
         # print(image)
-        image = tf.keras.applications.resnet50.preprocess_input(image)
+        # image = tf.keras.applications.resnet50.preprocess_input(image)
         # processed_image = preprocess_images(image, target_size=(224, 224))
         # processed_image = image.resize(processed_image, (224, 224))
         image = tf.image.resize(image, (224, 224))
         # processed_image = image / 255.0   
         processed_image = np.expand_dims(image, axis=0)
         
-        print("!", processed_image)
+        # print("!", processed_image)
         # Predict
         prediction = model.predict(processed_image).tolist()
-        predictions.append(prediction)
-
-    print(predictions)
+        prediction_index = [i for i, confidence in enumerate(prediction[0]) if confidence == max(prediction[0])]
+        # print(prediction_index, predictions[prediction_index[0]])
+        # [print(prediction_index, predictions[i]) for i in prediction_index]
+        image_info["prediction"] = [predictions[i] for i in prediction_index]
+        image_info["confidence"] = prediction[0][prediction_index[0]]
+        # predictions.append(prediction)
+        # print(prediction)
+    print(images_info)
+    # print
 
     # Write CSV for each image
 

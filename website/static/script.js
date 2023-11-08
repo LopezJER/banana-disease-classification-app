@@ -737,73 +737,41 @@ const toDataURL = url => fetch(url)
 const diagnoseBatchBtn = document.querySelector(".diagnose-batch-btn");
 diagnoseBatchBtn.addEventListener("click", () => {
   // TODO: Get all images
-  let imageSources = [];
   // let imageSources = ["https://www.gravatar.com/avatar/d50c83cc0c6523b4d3f6085295c953e0"];
-  let images = document.querySelectorAll(".gallery-container > div > img");
+  const images = document.querySelectorAll(".gallery-container > div > img");
   console.log("images");
-  images.forEach(image => {
-    imageSources.push(image.src);
+  
+  imgs_paths = [];
+  images.forEach(img => {
+    imgs_paths.push(img.src);
   });
 
-  // console.log(images.length);
-  console.log(imageSources);
-  // TODO: COnvert image (jpg) to base64
 
-  let imagesInBase64 = [];
-  imageSources.forEach(imageSource => {
-    toDataURL(imageSource)
-      .then(dataUrl => {
-        console.log("ADDING BASe64");
-        imagesInBase64.push(dataUrl);
-        console.log("TAPOS NA BA?");
-        console.log(imagesInBase64);
-        console.log(imagesInBase64.length, imageSources.length);
-        
+  console.log("Result:", imgs_paths); 
 
-      // Define the input string and the specific character
-      // let inputString = "example_string@some_value";
-      // let specificCharacter = '@';
+    if (images.length === imgs_paths.length) {
+    console.log("SENDING POST REQ");
+    message = {
+      images_paths: imgs_paths
+    }
+    console.log(message);
 
-      // Split the string based on the specific character and get the right part
-      // let rightPart = imageSource.split("/")[1];
-
-      // paths = [];
-      // console.log(imageSources);
-      // while (imageSource[imageSource.length - 1] !== "/") {
-      //   imageSource.substring(0, imageSource.length() - 1);
-      //   path.push();
-
-      // }
-
-      // Output the result
-      console.log("Result:", imagesInBase64); 
-
-        if (imageSources.length === imagesInBase64.length) {
-        console.log("SENDING POST REQ");
-        message = {
-          images: imagesInBase64
-        }
-        console.log(message);
-
-        fetch("/diagnose_batch", {
-          method: "POST",
-          body: JSON.stringify(message),
-          headers: {
-            "Content-type": "application/json; charset=UTF-8"
-          }
-        })
+    fetch("/diagnose_batch", {
+      method: "POST",
+      body: JSON.stringify(message),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    })
           // .then((response) => response.json())
           // .then((json) => console.log(json));
-
-
       }
-      })
+})
 
 
     
       console.log("SEND POST");
-  });
-});
+
     
   // TODO: Save all images in a array
   // TODO: Send post req
