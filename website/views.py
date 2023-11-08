@@ -453,30 +453,57 @@ def get_details(filename):
     conn = engine.connect()
 
     try:
-        # Query the database for the details of the image with the given filename
-        result = conn.execute(
-            text("SELECT * FROM banana_image WHERE filename = :filename"),
-            {"filename": filename}  # Use a parameterized query
-        )
+        try: 
+            # Query the database for the details of the image with the given filename
+            result = conn.execute(
+                text("SELECT * FROM banana_image WHERE filename = :filename"),
+                {"filename": filename}  # Use a parameterized query
+            )
 
-        # Fetch the first row (since filename should be unique)
-        row = result.fetchone()
+            # Fetch the first row (since filename should be unique)
+            row = result.fetchone()
 
-        if row:
-            print(row)  # Add this line to see the contents of 'row'
-            return jsonify({
-                'filename': row[0],
-                'diagnosis': row[1],
-                'treeID': row[2],
-                'author': row[3],
-                'part': row[4],
-                'status': row[5],
-                'location': row[6],
-                'captureTime': row[7],
-                'modifiedTime': row[8]
-    })
-        else:
-            return jsonify({"error": "File not found"}), 404
+            if row:
+                print(row)  # Add this line to see the contents of 'row'
+                return jsonify({
+                    'filename': row[0],
+                    'diagnosis': row[1],
+                    'treeID': row[2],
+                    'author': row[3],
+                    'part': row[4],
+                    'status': row[5],
+                    'location': row[6],
+                    'captureTime': row[7],
+                    'modifiedTime': row[8]
+        })
+            else:
+                return jsonify({"error": "File not found"}), 404
+        
+        except:
+            # Query the database for the details of the image with the given filename
+            result = conn.execute(
+                text("SELECT * FROM banana_image WHERE imageID = :filename"),
+                {"filename": filename}  # Use a parameterized query
+            )
+
+            # Fetch the first row (since filename should be unique)
+            row = result.fetchone()
+
+            if row:
+                print(row)  # Add this line to see the contents of 'row'
+                return jsonify({
+                    'filename': row[0],
+                    'diagnosis': row[1],
+                    'treeID': row[2],
+                    'author': row[3],
+                    'part': row[4],
+                    'status': row[5],
+                    'location': None,
+                    'captureTime': None,
+                    'modifiedTime': None
+        })
+            else:
+                return jsonify({"error": "File not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500  # Return a JSON error response
     finally:
@@ -529,14 +556,14 @@ def get_model():
     model = load_model('input model here')
     print(" * Model loaded!")
 
-def preprocess_images(image, target_size):
-    if image.mode != "RGB":
-        image = image.convert("RGB")
-    image = image.resize(target_size)
-    image = img_to_array(image)
-    image = np.expand_dims(image, axis=0)
+# def preprocess_images(image, target_size):
+#     if image.mode != "RGB":
+#         image = image.convert("RGB")
+#     image = image.resize(target_size)
+#     image = img_to_array(image)
+#     image = np.expand_dims(image, axis=0)
     
-    return image
+#     return image
 
 
 @views.route("/diagnose_specimen", methods=["POST"])
@@ -666,3 +693,15 @@ def diagnose_batch():
     df.to_csv(output_path, index=False)
 
     return jsonify("Created Batch Inference file CSV (seen at ./website/static/csv/batch_inference).")
+
+
+# TOOO:
+# - LOADING WHEN BACKEND IS WORKING ON BATCH INFERENCE
+# - GET OTHER INFO TO INCLUDE IN CSV
+# - SUCCESS MESSAGE/ERROR MESSAGE
+# - CATCH ERROR WITH WRONG MODEL
+# - FIX BUG SA UPLOAD NA D NADEDELETE UNG DATING UPLOADS
+# - ADD COMMENTS TO NOTEBOOK
+# - UPLOAD JUPYTER NOTEBOOKS
+# - ADD FAVICON AND ICON
+# - ADD MY TEST RESULT FOR TESTING MODEL
