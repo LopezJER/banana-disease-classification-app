@@ -743,6 +743,13 @@ returnToGalleryBtn.addEventListener('click', function () {
   clearPredictionAndConfidence();
 });
 
+// Add an event listener to the "Return to Gallery View" button
+const closeModalBtn = document.getElementById("close-modal");
+
+closeModalBtn.addEventListener('click', function () {
+  clearPredictionAndConfidence();
+});
+
 function clearPredictionAndConfidence() {
   var predictionElement = $("#prediction");
   var confidenceElement = $("#confidence");
