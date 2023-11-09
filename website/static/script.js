@@ -102,6 +102,9 @@ document.addEventListener("DOMContentLoaded", function () {
       var inspectImage = document.getElementById('inspectImage');
       inspectImage.src = prevImage.src;
 
+      // Clear prediction and confidence
+      clearPredictionAndConfidence();
+
       // Get the data for the currently displayed image
       var fileName = document.getElementById('filenameDisplay').textContent;
       var treeID = document.getElementById('treeidDisplay').textContent;
@@ -131,6 +134,9 @@ document.addEventListener("DOMContentLoaded", function () {
       // Update inspectImage in the modal
       var inspectImage = document.getElementById('inspectImage');
       inspectImage.src = nextImage.src;
+
+      // Clear prediction and confidence
+      clearPredictionAndConfidence();
 
       // Get the data for the currently displayed image
       var fileName = document.getElementById('filenameDisplay').textContent;
@@ -710,6 +716,7 @@ loadingModal.addEventListener(("hidden.bs.modal"), () => {
   header.classList.remove("justify-content-center");
 });
 
+
 // Function to handle image selection and diagnosis
 $("#diagnose-specimen-btn").click(function (event) {
   // Get the image URL from the 'inspectImage' element
@@ -728,6 +735,15 @@ $("#diagnose-specimen-btn").click(function (event) {
     }
   );
 });
+
+function clearPredictionAndConfidence() {
+  var predictionElement = $("#prediction");
+  var confidenceElement = $("#confidence");
+
+  // Clear the content for prediction and confidence
+  predictionElement.text('');
+  confidenceElement.text('');
+}
 
 const diagnoseBatchBtn = document.querySelector(".diagnose-batch-btn");
 diagnoseBatchBtn.addEventListener("click", () => {
