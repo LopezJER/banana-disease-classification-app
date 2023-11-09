@@ -15,7 +15,7 @@ import copy
 
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.models import load_model
+
 
 import io
 import base64
@@ -198,6 +198,13 @@ def upload_folder():
         destination_dir = os.path.join(os.getcwd(), 'website', 'static', 'uploads')
         os.makedirs(destination_dir, exist_ok=True)
 
+        # Remove existing files in the 'uploads' folder
+        existing_files = os.listdir(destination_dir)
+        for existing_file in existing_files:
+            file_path = os.path.join(destination_dir, existing_file)
+            os.remove(file_path)
+
+        # Save newly uploaded files to the 'uploads' folder
         for uploaded_file in uploaded_files:
             filename = secure_filename(uploaded_file.filename)
             uploaded_file.save(os.path.join(destination_dir, filename))
@@ -205,7 +212,7 @@ def upload_folder():
         # Find directory where files are uploaded
         uploads_dir = os.path.join(os.getcwd(), 'website', 'static', 'uploads')
         file_names = os.listdir(uploads_dir)
-        
+
         # Locate a CSV file in the "uploads" directory (customize your criteria)
         csv_file = None
         for file_name in file_names:
@@ -225,7 +232,7 @@ def upload_folder():
             with engine.connect() as conn, conn.begin():
                 df.to_sql("banana_image", conn, if_exists="replace", index=False)
 
-        return jsonify({"message": "Files uploaded successfully"})
+            return jsonify({"message": "Files uploaded and processed successfully"})
 
     return jsonify({"error": "No files uploaded"}), 400
 
