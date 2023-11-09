@@ -646,7 +646,7 @@ def diagnose_batch():
     print("PUMASOK?")
 
     # TODO: Get the model
-    model = load_model("models/laguna_banana_model_resnet92.41.h5")
+    model = load_model("models/laguna_banana_model_mobilenet.h5")
 
     # TODO: Decode jpg to insteaad of png
     message = request.get_json(force=True)
