@@ -675,7 +675,7 @@ def diagnose_batch():
     print(images_info)
     # print(decoded_images)
     
-    predictions = ["Healthy", "Bunchy Top", "Black Sigatoka"]
+    predictions = ["Black sigatoka", "Bunchy top", "Healthy"]
     for image_info in images_info:
         path = image_info["path"]
         # Preprocess image
