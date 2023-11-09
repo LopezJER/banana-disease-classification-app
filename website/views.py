@@ -653,75 +653,76 @@ def diagnose_batch():
     print("PUMASOK?")
 
     # TODO: Get the model
-    model = load_model("models/laguna_banana_model_mobilenet.h5")
+    # model = load_model("models/laguna_banana_model_mobilenet.h5")
 
-    # TODO: Decode jpg to insteaad of png
+    # Fetch urls from images
     message = request.get_json(force=True)
     images_paths = message["images_paths"]
     images_info = [{"path": path} for path in images_paths]
     # other_info = message["other_infos"]
 
-    # TODO: Get all urls
+    # Get all urls and image ids (filename)
     for image_info in images_info:
         path = image_info["path"]
         parts_of_path = path.split("/")
-        for part in parts_of_path:
-            if part == "static":
-                break
-            parts_of_path.pop(0)
-            
-        print(parts_of_path)
-        path = "/".join(parts_of_path)
-        path = os.path.join("website", path)
-        print(path)
         image_info["image-id"] = parts_of_path[-1]
         image_info["path"] = path
 
-
-
     print(images_info)
-    # print(decoded_images)
     
-    predictions = ["Black sigatoka", "Bunchy top", "Healthy"]
+    # Preprocess image
+    labels = ["Black sigatoka", "Bunchy top", "Healthy"]
     for image_info in images_info:
         path = image_info["path"]
-        # Preprocess image
         print(path)
-        image = tf.image.decode_image(tf.io.read_file(path))
+        image_response = requests.get(path)
+        image_bytes = image_response.content
 
-        image = tf.image.resize(image, (224, 224))
-        # processed_image = image / 255.0   
-        processed_image = np.expand_dims(image, axis=0)
+        # Convert the image to base64
+        encoded_image = base64.b64encode(image_bytes).decode("utf-8")
+
+        # Decode the base64-encoded image
+        decoded_image = base64.b64decode(encoded_image)
+        image = Image.open(io.BytesIO(decoded_image))
+        image = image.convert('RGB')
+        image = image.resize((224, 224))
+        image = np.array(image) / 255.0
         
-        # Predict
-        prediction = model.predict(processed_image).tolist()
-        prediction_index = [i for i, confidence in enumerate(prediction[0]) if confidence == max(prediction[0])]
+        # Predict using model
+        predictions = model.predict(np.expand_dims(image, axis=0))
+        prediction_index = np.argmax(predictions)
 
-        image_info["prediction"] = "; ".join([predictions[i] for i in prediction_index])
-        image_info["confidence"] = f"{prediction[0][prediction_index[0]]:.4f}"
+        image_info["prediction"] = labels[prediction_index]
+        image_info["confidence"] = f"{predictions[0][prediction_index]:.4f}"
 
 
     print(images_info)
 
+    # Write csv content
     data = {
         "imageID": [image_info.get("image-id") for image_info in images_info],
         "prediction": [image_info.get("prediction") for image_info in images_info],
         "confidence": [image_info.get("confidence") for image_info in images_info],
     }
     
+    # Do no include empty columns
     for datum in copy.deepcopy(data):
         if not any(data.get(datum)):
             data.pop(datum)
 
+    #  Get current datetime 
     now = datetime.now()
     now = now.strftime("%m-%d-%Y_%H-%M-%S")
 
-
+    # Convert dictionary to pandas dataframe
     df = pd.DataFrame(data)
+    # Use the current datetime as the filename for the csv file to be created
     output_file = f"{now}.csv"
     
+    # Get the path in which csv file must be saved
     output_path = os.path.join("website", "static", "csv", "batch_inference", output_file)
     print(output_path)
+    # Convert dataframe to csv file and save at the created path
     df.to_csv(output_path, index=False)
 
     return jsonify("Created Batch Inference file CSV (seen at ./website/static/csv/batch_inference).")
