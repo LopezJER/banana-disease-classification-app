@@ -15,8 +15,7 @@ import copy
 
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.models import load_model
-
+import requests
 import io
 import base64
 import base64
@@ -574,11 +573,6 @@ def quarantine():
     
     return redirect("/")
 
-def get_model():
-    global model
-    model = load_model('input model here')
-    print(" * Model loaded!")
-
 # def preprocess_images(image, target_size):
 #     if image.mode != "RGB":
 #         image = image.convert("RGB")
@@ -588,53 +582,63 @@ def get_model():
     
 #     return image
 
+# Load the pre-trained model
+model_path = "models/laguna_banana_model_mobilenet.h5"
+model = load_model(model_path)
 
 @views.route("/diagnose_specimen", methods=["POST"])
 def diagnose_specimen():
     try:
         message = request.get_json(force=True)
-        print("Received message:", message)  # Add this line for debugging
-        encoded = message.get('image')
-        print("Received encoded image data:", encoded)  # Add this line for debugging
+        image_url = message.get('imageUrl')
 
-        if encoded:
+        if image_url:
             try:
-                decoded = base64.b64decode(encoded)
-                print("Decoding successful")
-            except Exception as decode_error:
-                print("Error decoding base64 data:", decode_error)
-                # Handle the decoding error, e.g., return an error response
-            else:
-                print("No image data provided in the request")
-                # Handle the case when no image data is provided
+                # Fetch the image from the URL
+                image_response = requests.get(image_url)
+                if image_response.status_code == 200:
+                    image_bytes = image_response.content
 
-            try:
-                image = Image.open(io.BytesIO(decoded))
-                image = image.convert('RGB')  # Ensure the image is in RGB format
-                image = image.resize((224, 224))  # Resize the image to the desired input size
-                processed_image = preprocess_input(tf.convert_to_tensor(np.array(image, dtype=np.float32)[tf.newaxis]))
-                prediction = model.predict(processed_image).tolist()
+                    # Convert the image to base64
+                    encoded_image = base64.b64encode(image_bytes).decode("utf-8")
 
-                response = {
-                    'prediction': {
-                        'Black sigatoka': prediction[0][0],
-                        'Bunchy top': prediction[0][1],
-                        'Healthy': prediction[0][2]
+                    # Decode the base64-encoded image
+                    decoded_image = base64.b64decode(encoded_image)
+                    image = Image.open(io.BytesIO(decoded_image))
+                    image = image.convert('RGB')
+                    image = image.resize((224, 224))
+                    image = np.array(image) / 255.0
+
+                    # Make a prediction using your model
+                    predictions = model.predict(np.expand_dims(image, axis=0))
+                    prediction_index = np.argmax(predictions)
+                    confidence = predictions[0][prediction_index]
+
+                    # You can map the prediction_index to a label if needed
+                    labels = ["Black sigatoka", "Bunchy top", "Healthy"]   # Replace with your class labels
+                    prediction = labels[prediction_index]
+                    # Convert the confidence to a whole number (integer)
+                    confidence_percentage = int(confidence * 100)
+                    
+                    response = {
+                        "prediction": prediction,
+                        "confidence": confidence_percentage  # Convert to percentage
                     }
-                }
-                return jsonify(response)
-            except UnidentifiedImageError:
-                error_response = {'error': 'Unidentified image format'}
+
+                    return jsonify(response)
+                else:
+                    error_response = {'error': 'Error fetching the image from the URL'}
+                    return jsonify(error_response), 400  # HTTP 400 Bad Request
+            except Exception as decode_error:
+                error_response = {'error': 'Error decoding or processing the image'}
                 return jsonify(error_response), 400  # HTTP 400 Bad Request
         else:
-            error_response = {'error': 'Image not provided in the request'}
+            error_response = {'error': 'Image URL not provided in the request'}
             return jsonify(error_response), 400  # HTTP 400 Bad Request
     except Exception as e:
-        # Handle other exceptions
         error_response = {'error': 'Internal server error'}
         return jsonify(error_response), 500  # HTTP 500 Internal Server Error
-
-
+        
 @views.route("/diagnose_batch", methods=["POST"])
 def diagnose_batch():
     print("PUMASOK?")
