@@ -736,6 +736,13 @@ $("#diagnose-specimen-btn").click(function (event) {
   );
 });
 
+// Add an event listener to the "Return to Gallery View" button
+const returnToGalleryBtn = document.getElementById("return-to-gallery");
+
+returnToGalleryBtn.addEventListener('click', function () {
+  clearPredictionAndConfidence();
+});
+
 function clearPredictionAndConfidence() {
   var predictionElement = $("#prediction");
   var confidenceElement = $("#confidence");
