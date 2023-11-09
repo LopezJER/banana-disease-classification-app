@@ -1,35 +1,28 @@
-import pandas as pd
-tracked_filenames = []
 from flask import Blueprint, render_template, request, jsonify, redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
-import os
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import sessionmaker
-from .models import Image
 from sqlalchemy import or_
+
+import tensorflow as tf
+from tensorflow import keras
+from keras.models import load_model
+
+from .models import Image
 import json
 import shutil
 from datetime import datetime
 import copy
 
-import tensorflow as tf
-from tensorflow import keras
-
-
-import io
-import base64
+import pandas as pd
 import base64
 import numpy as np
 import io
-from PIL import Image, UnidentifiedImageError
-import tensorflow as tf
-import keras.applications
-from keras.models import Sequential, load_model
-from keras.preprocessing.image import ImageDataGenerator, img_to_array
-from keras.applications.mobilenet import MobileNet
-from keras.applications.mobilenet import preprocess_input
+from PIL import Image
 import requests
+import os
+
 
 
 # Connect to the database
@@ -41,6 +34,8 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 views = Blueprint('views', __name__)
+
+tracked_filenames = []
 
 @views.route('/')
 def index():
@@ -582,14 +577,6 @@ def quarantine():
     
     return redirect("/")
 
-# def preprocess_images(image, target_size):
-#     if image.mode != "RGB":
-#         image = image.convert("RGB")
-#     image = image.resize(target_size)
-#     image = img_to_array(image)
-#     image = np.expand_dims(image, axis=0)
-    
-#     return image
 
 # Load the pre-trained model
 model_path = "models/laguna_banana_model_mobilenet.h5"
@@ -650,11 +637,6 @@ def diagnose_specimen():
         
 @views.route("/diagnose_batch", methods=["POST"])
 def diagnose_batch():
-    print("PUMASOK?")
-
-    # TODO: Get the model
-    # model = load_model("models/laguna_banana_model_mobilenet.h5")
-
     # Fetch urls from images
     message = request.get_json(force=True)
     images_paths = message["images_paths"]
@@ -725,15 +707,6 @@ def diagnose_batch():
     # Convert dataframe to csv file and save at the created path
     df.to_csv(output_path, index=False)
 
-    return jsonify("Created Batch Inference file CSV (seen at ./website/static/csv/batch_inference).")
-
-
-# TOOO:
-# - LOADING WHEN BACKEND IS WORKING ON BATCH INFERENCE
-# - SUCCESS MESSAGE/ERROR MESSAGE
-# - CATCH ERROR WITH WRONG MODEL
-# - FIX BUG SA UPLOAD NA D NADEDELETE UNG DATING UPLOADS
-# - ADD COMMENTS TO NOTEBOOK
-# - UPLOAD JUPYTER NOTEBOOKS
-# - ADD FAVICON AND ICON
-# - ADD MY TEST RESULT FOR TESTING MODEL
+    return jsonify({
+        "message": "See predictions at website/static/csv/"
+    })

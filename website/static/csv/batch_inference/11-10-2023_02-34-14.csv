@@ -1,0 +1,16 @@
+imageID,prediction,confidence
+04ec3654-fd22-4d9f-9ad0-c651e58c6170.jpg,Black sigatoka,0.9423
+0a447700-28b7-42db-8171-c4eb2d76be2f.jpg,Healthy,0.9095
+1ceb95b3-223a-49fd-bf66-e828ba7d1c43.jpg,Bunchy top,0.9282
+245072bd-70b2-4fcb-a23b-b207300e001b.jpg,Black sigatoka,0.5241
+3ffd82ae-1262-4f2e-9a65-3b30772dacdd.jpg,Black sigatoka,0.7918
+4b8fc6a0-b9b8-4aa0-b394-a66be1a47b95.jpg,Bunchy top,0.8743
+4f48f896-6fda-439c-9a17-fe40078a9157.jpg,Black sigatoka,0.6547
+7078ebb2-42ba-438b-81c6-126be6ba4b61.jpg,Black sigatoka,0.3898
+71e996be-9266-4a37-92e2-553ad0320aeb.jpg,Bunchy top,0.4448
+93944ea8-d521-4c6e-8a1b-c5a2fc90c036.jpg,Black sigatoka,0.7633
+9e651e0f-954f-450f-85af-97d27a50367f.jpg,Black sigatoka,0.5996
+daf16419-9f9a-4178-bd86-d00e4ad7d6ee.jpg,Healthy,0.9475
+e14d7c6a-0085-4040-a005-9ed6f13705b1.jpg,Bunchy top,0.9674
+f514770d-5655-4399-ae0b-eb5a38f27eeb.jpg,Black sigatoka,0.7231
+f7f8cff7-f0d3-4a5b-8728-157f6b2f9dcc.jpg,Black sigatoka,0.4965
