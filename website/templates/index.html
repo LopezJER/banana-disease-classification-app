@@ -458,7 +458,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="inspectModalLabel">Inspect Specimen</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close-modal"></button>
                 </div>
                 <div class="modal-body">
                   <div class="row">
@@ -520,7 +520,7 @@
                       </table>
                       <div style="margin-top: -10px; margin-left: 15px; display: flex; flex-direction: column; align-items: center;">
                         <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#updateMetaDateModal">Update Metadata</button>
-                        <button type="button" class="btn btn-primary mt-3" id="diagnose-button">Diagnose specimen</button>
+                        <button type="button" class="btn btn-primary mt-3" id="diagnose-specimen-btn">Diagnose specimen</button>
                         <div class="prediction-box" style="margin-top: 15px;">
                           <h6>Prediction: <span id="prediction"></span></h6>
                           <h6>Confidence: <span id="confidence"></span></h6>
@@ -531,7 +531,7 @@
                   <!-- New Row -->
                   <div class="row mt-3">
                     <div class="col-12 d-flex justify-content-end">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Return to Gallery View</button>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="return-to-gallery">Return to Gallery View</button>
                     </div>
                   </div>
                 </div>

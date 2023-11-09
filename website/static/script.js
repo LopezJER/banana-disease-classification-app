@@ -102,6 +102,9 @@ document.addEventListener("DOMContentLoaded", function () {
       var inspectImage = document.getElementById('inspectImage');
       inspectImage.src = prevImage.src;
 
+      // Clear prediction and confidence
+      clearPredictionAndConfidence();
+
       // Get the data for the currently displayed image
       var fileName = document.getElementById('filenameDisplay').textContent;
       var treeID = document.getElementById('treeidDisplay').textContent;
@@ -131,6 +134,9 @@ document.addEventListener("DOMContentLoaded", function () {
       // Update inspectImage in the modal
       var inspectImage = document.getElementById('inspectImage');
       inspectImage.src = nextImage.src;
+
+      // Clear prediction and confidence
+      clearPredictionAndConfidence();
 
       // Get the data for the currently displayed image
       var fileName = document.getElementById('filenameDisplay').textContent;
@@ -682,43 +688,6 @@ document.addEventListener('DOMContentLoaded', function () {
   attachPaginationListeners(); // Attach event listeners initially
 });
 
-let base64Image; // Declare base64Image globally
-
-$(document).ready(function () {
-  // Function to handle image selection
-  $("#diagnose-button").click(function (event) {
-    // Get the image data from the 'inspectImage' element
-    const imageElement = document.getElementById("inspectImage");
-    const canvas = document.createElement("canvas");
-    canvas.width = imageElement.width;
-    canvas.height = imageElement.height;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(imageElement, 0, 0, canvas.width, canvas.height);
-    const base64Image = canvas.toDataURL("image/jpeg"); // Convert the image to base64
-
-    // Check if base64Image is defined before sending the POST request
-    if (base64Image) {
-      const message = {
-        image: base64Image,
-      };
-      console.log(message);
-      $.post(
-        "/diagnose_specimen", // Your Flask route
-        JSON.stringify(message),
-        function (response) {
-          // Update the HTML with the predictions dynamically
-          for (let className in response.prediction) {
-            $(`#${className}-prediction`).text(response.prediction[className]);
-            $(`#${className}-confidence`).text((response.prediction[className] * 100).toFixed(2) + '%');
-          }
-        }
-      );
-    } else {
-      console.error("Image not selected or processed yet.");
-    }
-  });
-});
-
 const loadingModal = document.querySelector(".loading-modal");
 const predictingModal = new bootstrap.Modal('.predicting-modal');
 
@@ -748,8 +717,47 @@ loadingModal.addEventListener(("hidden.bs.modal"), () => {
 });
 
 
+// Function to handle image selection and diagnosis
+$("#diagnose-specimen-btn").click(function (event) {
+  // Get the image URL from the 'inspectImage' element
+  const imageUrl = $("#inspectImage").attr("src");
 
+  // Send the image URL to the server for processing
+  $.post(
+    "/diagnose_specimen",  // Your Flask route
+    JSON.stringify({ imageUrl: imageUrl }),
+    function (response) {
+      // Handle the response from the server
+      const predictionElement = $("#prediction");
+      const confidenceElement = $("#confidence");
+      predictionElement.text(`${response.prediction}`);
+      confidenceElement.text(`${response.confidence}%`);
+    }
+  );
+});
 
+// Add an event listener to the "Return to Gallery View" button
+const returnToGalleryBtn = document.getElementById("return-to-gallery");
+
+returnToGalleryBtn.addEventListener('click', function () {
+  clearPredictionAndConfidence();
+});
+
+// Add an event listener to the "Return to Gallery View" button
+const closeModalBtn = document.getElementById("close-modal");
+
+closeModalBtn.addEventListener('click', function () {
+  clearPredictionAndConfidence();
+});
+
+function clearPredictionAndConfidence() {
+  var predictionElement = $("#prediction");
+  var confidenceElement = $("#confidence");
+
+  // Clear the content for prediction and confidence
+  predictionElement.text('');
+  confidenceElement.text('');
+}
 
 const diagnoseBatchBtn = document.querySelector(".diagnose-batch-btn");
 diagnoseBatchBtn.addEventListener("click", () => {
@@ -763,15 +771,15 @@ diagnoseBatchBtn.addEventListener("click", () => {
   const images = document.querySelectorAll(".gallery-container > div > img");
   console.log("images");
 
-  
+
 
   images.forEach(img => {
     imgs_paths.push(img.src);
   });
 
-  console.log("Result:", imgs_paths); 
+  console.log("Result:", imgs_paths);
 
-    if (images.length === imgs_paths.length) {
+  if (images.length === imgs_paths.length) {
     console.log("SENDING POST REQ");
     message = {
       images_paths: imgs_paths,
@@ -786,18 +794,18 @@ diagnoseBatchBtn.addEventListener("click", () => {
         "Content-type": "application/json; charset=UTF-8"
       }
     })
-          .then((response) => updateLoadingModal());
-          // .then((json) => console.log(json));
-      }
+      .then((response) => updateLoadingModal());
+    // .then((json) => console.log(json));
+  }
 })
 
 
-    
-      console.log("SEND POST");
 
-    
-  // TODO: Save all images in a array
-  // TODO: Send post req
+console.log("SEND POST");
+
+
+// TODO: Save all images in a array
+// TODO: Send post req
 // });
 
 // const sendPost = () => {
