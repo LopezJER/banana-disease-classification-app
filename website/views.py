@@ -15,7 +15,8 @@ import copy
 
 import tensorflow as tf
 from tensorflow import keras
-import requests
+
+
 import io
 import base64
 import base64
@@ -28,6 +29,7 @@ from keras.models import Sequential, load_model
 from keras.preprocessing.image import ImageDataGenerator, img_to_array
 from keras.applications.mobilenet import MobileNet
 from keras.applications.mobilenet import preprocess_input
+import requests
 
 
 # Connect to the database
