@@ -1,35 +1,28 @@
-import pandas as pd
-tracked_filenames = []
 from flask import Blueprint, render_template, request, jsonify, redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
-import os
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import sessionmaker
-from .models import Image
 from sqlalchemy import or_
+
+import tensorflow as tf
+from tensorflow import keras
+from keras.models import load_model
+
+from .models import Image
 import json
 import shutil
 from datetime import datetime
 import copy
 
-import tensorflow as tf
-from tensorflow import keras
-
-
-import io
-import base64
+import pandas as pd
 import base64
 import numpy as np
 import io
-from PIL import Image, UnidentifiedImageError
-import tensorflow as tf
-import keras.applications
-from keras.models import Sequential, load_model
-from keras.preprocessing.image import ImageDataGenerator, img_to_array
-from keras.applications.mobilenet import MobileNet
-from keras.applications.mobilenet import preprocess_input
+from PIL import Image
 import requests
+import os
+
 
 
 # Connect to the database
@@ -41,6 +34,8 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 views = Blueprint('views', __name__)
+
+tracked_filenames = []
 
 @views.route('/')
 def index():
@@ -582,14 +577,6 @@ def quarantine():
     
     return redirect("/")
 
-# def preprocess_images(image, target_size):
-#     if image.mode != "RGB":
-#         image = image.convert("RGB")
-#     image = image.resize(target_size)
-#     image = img_to_array(image)
-#     image = np.expand_dims(image, axis=0)
-    
-#     return image
 
 # Load the pre-trained model
 model_path = "models/laguna_banana_model_mobilenet.h5"
@@ -650,89 +637,76 @@ def diagnose_specimen():
         
 @views.route("/diagnose_batch", methods=["POST"])
 def diagnose_batch():
-    print("PUMASOK?")
-
-    # TODO: Get the model
-    model = load_model("models/laguna_banana_model_mobilenet.h5")
-
-    # TODO: Decode jpg to insteaad of png
+    # Fetch urls from images
     message = request.get_json(force=True)
     images_paths = message["images_paths"]
     images_info = [{"path": path} for path in images_paths]
     # other_info = message["other_infos"]
 
-    # TODO: Get all urls
+    # Get all urls and image ids (filename)
     for image_info in images_info:
         path = image_info["path"]
         parts_of_path = path.split("/")
-        for part in parts_of_path:
-            if part == "static":
-                break
-            parts_of_path.pop(0)
-            
-        print(parts_of_path)
-        path = "/".join(parts_of_path)
-        path = os.path.join("website", path)
-        print(path)
         image_info["image-id"] = parts_of_path[-1]
         image_info["path"] = path
 
-
-
     print(images_info)
-    # print(decoded_images)
     
-    predictions = ["Black sigatoka", "Bunchy top", "Healthy"]
+    # Preprocess image
+    labels = ["Black sigatoka", "Bunchy top", "Healthy"]
     for image_info in images_info:
         path = image_info["path"]
-        # Preprocess image
         print(path)
-        image = tf.image.decode_image(tf.io.read_file(path))
+        image_response = requests.get(path)
+        image_bytes = image_response.content
 
-        image = tf.image.resize(image, (224, 224))
-        # processed_image = image / 255.0   
-        processed_image = np.expand_dims(image, axis=0)
+        # Convert the image to base64
+        encoded_image = base64.b64encode(image_bytes).decode("utf-8")
+
+        # Decode the base64-encoded image
+        decoded_image = base64.b64decode(encoded_image)
+        image = Image.open(io.BytesIO(decoded_image))
+        image = image.convert('RGB')
+        image = image.resize((224, 224))
+        image = np.array(image) / 255.0
         
-        # Predict
-        prediction = model.predict(processed_image).tolist()
-        prediction_index = [i for i, confidence in enumerate(prediction[0]) if confidence == max(prediction[0])]
+        # Predict using model
+        predictions = model.predict(np.expand_dims(image, axis=0))
+        prediction_index = np.argmax(predictions)
 
-        image_info["prediction"] = "; ".join([predictions[i] for i in prediction_index])
-        image_info["confidence"] = f"{prediction[0][prediction_index[0]]:.4f}"
+        image_info["prediction"] = labels[prediction_index]
+        image_info["confidence"] = f"{predictions[0][prediction_index]:.4f}"
 
 
     print(images_info)
 
+    # Write csv content
     data = {
         "imageID": [image_info.get("image-id") for image_info in images_info],
         "prediction": [image_info.get("prediction") for image_info in images_info],
         "confidence": [image_info.get("confidence") for image_info in images_info],
     }
     
+    # Do no include empty columns
     for datum in copy.deepcopy(data):
         if not any(data.get(datum)):
             data.pop(datum)
 
+    #  Get current datetime 
     now = datetime.now()
     now = now.strftime("%m-%d-%Y_%H-%M-%S")
 
-
+    # Convert dictionary to pandas dataframe
     df = pd.DataFrame(data)
+    # Use the current datetime as the filename for the csv file to be created
     output_file = f"{now}.csv"
     
+    # Get the path in which csv file must be saved
     output_path = os.path.join("website", "static", "csv", "batch_inference", output_file)
     print(output_path)
+    # Convert dataframe to csv file and save at the created path
     df.to_csv(output_path, index=False)
 
-    return jsonify("Created Batch Inference file CSV (seen at ./website/static/csv/batch_inference).")
-
-
-# TOOO:
-# - LOADING WHEN BACKEND IS WORKING ON BATCH INFERENCE
-# - SUCCESS MESSAGE/ERROR MESSAGE
-# - CATCH ERROR WITH WRONG MODEL
-# - FIX BUG SA UPLOAD NA D NADEDELETE UNG DATING UPLOADS
-# - ADD COMMENTS TO NOTEBOOK
-# - UPLOAD JUPYTER NOTEBOOKS
-# - ADD FAVICON AND ICON
-# - ADD MY TEST RESULT FOR TESTING MODEL
+    return jsonify({
+        "message": "See predictions at website/static/csv/"
+    })

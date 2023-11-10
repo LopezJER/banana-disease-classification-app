@@ -691,13 +691,13 @@ document.addEventListener('DOMContentLoaded', function () {
 const loadingModal = document.querySelector(".loading-modal");
 const predictingModal = new bootstrap.Modal('.predicting-modal');
 
-const updateLoadingModal = () => {
+const updateLoadingModal = (message) => {
   const spinner = loadingModal.querySelector(".spinner-border");
   const label = loadingModal.querySelector("h1");
   const closeBtn = loadingModal.querySelector(".btn-close");
   const header = loadingModal.querySelector(".modal-header");
 
-  label.textContent = "See predictions at ./website/static/csv/";
+  label.textContent = message;
   spinner.classList.add("visually-hidden");
   closeBtn.classList.remove("visually-hidden");
   header.classList.add("justify-content-center");
@@ -761,32 +761,27 @@ function clearPredictionAndConfidence() {
 
 const diagnoseBatchBtn = document.querySelector(".diagnose-batch-btn");
 diagnoseBatchBtn.addEventListener("click", () => {
-  // TODO: Get all images
-  // let imageSources = ["https://www.gravatar.com/avatar/d50c83cc0c6523b4d3f6085295c953e0"];
-  // const predictingModal = new bootstrap.Modal('.predicting-modal');  
+  // Show that the modal to indicate indicate users that prediction process is ongoing
   predictingModal.show();
 
-  let imgs_paths = [];
-
+  // Get all image urls in the current slide of pagination
   const images = document.querySelectorAll(".gallery-container > div > img");
-  console.log("images");
-
-
-
+  let imgs_paths = [];
   images.forEach(img => {
     imgs_paths.push(img.src);
   });
 
   console.log("Result:", imgs_paths);
 
+  // Create an object containing all image urls
   if (images.length === imgs_paths.length) {
     console.log("SENDING POST REQ");
     message = {
       images_paths: imgs_paths,
-      // other_infos: other_infos
     }
     console.log(message);
 
+    // Sned a post request to diagnose the entire batch (aka batch inference)
     fetch("/diagnose_batch", {
       method: "POST",
       body: JSON.stringify(message),
@@ -794,20 +789,7 @@ diagnoseBatchBtn.addEventListener("click", () => {
         "Content-type": "application/json; charset=UTF-8"
       }
     })
-      .then((response) => updateLoadingModal());
-    // .then((json) => console.log(json));
+      .then((response) => response.json())
+      .then((json) => updateLoadingModal(json.message));
   }
 })
-
-
-
-console.log("SEND POST");
-
-
-// TODO: Save all images in a array
-// TODO: Send post req
-// });
-
-// const sendPost = () => {
-//   $post
-// }
