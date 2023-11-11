@@ -116,4 +116,6 @@ Please download the dataset at:
 - Download the dataset: [GoogleDrive Link](https://drive.google.com/file/d/1B_bPOivLtsHwtGcYVOl8i3TNsZMcx-Sy/view?usp=sharing) 
 - Alternatively, copy and past the link: https://drive.google.com/file/d/1B_bPOivLtsHwtGcYVOl8i3TNsZMcx-Sy/view?usp=sharing
 
+- Download the preprocessed and split dataset:  [GoogleDrive Link](https://drive.google.com/drive/folders/1cPkNYJOUh-5a_2qXJSx6ps7Wz-ib7WBk?usp=sharing)
+
 [&#9650; Back to the Top](#banana-disease-classification-app)
