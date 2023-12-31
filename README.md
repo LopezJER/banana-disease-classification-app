@@ -1,4 +1,4 @@
-# Banana Disease Classification App
+# Image Data Management Tool with AI-Assisted Labelling 
 
 **Description:** Provides AI-assisted automatic labelling of banana images with unknown disease classes.
 
